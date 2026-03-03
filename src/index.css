@@ -1,0 +1,449 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   STUDY SPARK – ANTIGRAVITY DESIGN SYSTEM
+   Brand palette: Rich Purple / Lilac / Lavender
+   ============================================================ */
+
+@layer base {
+  :root {
+    /* ── Core brand tokens ── */
+    --color-bg:        #F5EFFF;
+    --color-surface:   #E5D9F2;
+    --color-primary:   #A294F9;
+    --color-secondary: #CDC1FF;
+    --text-primary:    #222C3C;
+    --text-muted:      #6B7A99;
+    --button-radius:   8px;
+
+    /* ── Shadcn / Tailwind HSL tokens ── */
+    /* Background: Very Pale Lavender #F5EFFF → hsl(270 100% 97%) */
+    --background:      270 100% 97%;
+    --foreground:      222 28% 18%;   /* #222C3C */
+
+    /* Card: white with slight lavender tint */
+    --card:            0 0% 100%;
+    --card-foreground: 222 28% 18%;
+
+    --popover:         0 0% 100%;
+    --popover-foreground: 222 28% 18%;
+
+    /* Primary: Rich Purple #A294F9 → hsl(249 89% 78%) */
+    --primary:         249 89% 78%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary: Lilac #CDC1FF → hsl(249 100% 88%) */
+    --secondary:       249 100% 88%;
+    --secondary-foreground: 222 28% 18%;
+
+    /* Muted: Light Lavender #E5D9F2 → hsl(270 43% 90%) */
+    --muted:           270 43% 90%;
+    --muted-foreground: 222 15% 45%;
+
+    /* Accent: same as primary for consistency */
+    --accent:          249 89% 78%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Success */
+    --success:         160 70% 45%;
+    --success-foreground: 0 0% 100%;
+
+    /* Focus / Warning */
+    --focus:           35 85% 60%;
+    --focus-foreground: 35 15% 15%;
+
+    /* Destructive */
+    --destructive:     0 75% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders & inputs */
+    --border:          249 40% 85%;
+    --input:           249 40% 92%;
+    --ring:            249 89% 78%;
+
+    --radius: 0.5rem;
+
+    /* Sidebar */
+    --sidebar-background: 270 100% 97%;
+    --sidebar-foreground: 222 28% 18%;
+    --sidebar-primary:    249 89% 78%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent:     249 100% 88%;
+    --sidebar-accent-foreground: 222 28% 18%;
+    --sidebar-border:     249 40% 85%;
+    --sidebar-ring:       249 89% 78%;
+  }
+
+  /* ── Dark mode ── */
+  .dark {
+    --color-bg:        #121212;
+    --color-surface:   #1E1E27;
+    --color-primary:   #B8A5FF;
+    --color-secondary: #9D8FE0;
+    --text-primary:    #E8EDF5;
+    --text-muted:      #A0A8B0;
+
+    --background:      0 0% 7%;        /* #121212 */
+    --foreground:      220 30% 95%;    /* #E8EDF5 */
+
+    --card:            240 14% 14%;    /* #1E1E27 */
+    --card-foreground: 220 30% 95%;
+
+    --popover:         240 14% 14%;
+    --popover-foreground: 220 30% 95%;
+
+    /* Slightly lighter purple for dark bg contrast */
+    --primary:         255 100% 83%;   /* #B8A5FF */
+    --primary-foreground: 240 14% 10%;
+
+    --secondary:       249 40% 35%;
+    --secondary-foreground: 220 30% 95%;
+
+    --muted:           240 14% 18%;
+    --muted-foreground: 220 15% 65%;
+
+    --accent:          255 100% 83%;
+    --accent-foreground: 240 14% 10%;
+
+    --success:         160 70% 50%;
+    --success-foreground: 240 14% 10%;
+
+    --focus:           35 85% 65%;
+    --focus-foreground: 240 14% 10%;
+
+    --destructive:     0 75% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border:          240 14% 22%;
+    --input:           240 14% 18%;
+    --ring:            255 100% 83%;
+
+    --sidebar-background: 240 14% 10%;
+    --sidebar-foreground: 220 30% 95%;
+    --sidebar-primary:    255 100% 83%;
+    --sidebar-primary-foreground: 240 14% 10%;
+    --sidebar-accent:     240 14% 18%;
+    --sidebar-accent-foreground: 220 30% 95%;
+    --sidebar-border:     240 14% 22%;
+    --sidebar-ring:       255 100% 83%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1 { @apply text-3xl font-bold tracking-tight; }
+  h2 { @apply text-2xl font-semibold tracking-tight; }
+  h3 { @apply text-lg font-medium; }
+  h4 { @apply text-base font-medium; }
+
+  /* Visible focus ring for accessibility */
+  :focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ============================================================
+   UTILITY CLASSES – Antigravity Design System
+   ============================================================ */
+
+@layer components {
+
+  /* ── Glassmorphic card ── */
+  .glass-card {
+    @apply bg-white/70 dark:bg-white/5 backdrop-blur-md border border-white/40 dark:border-white/10 rounded-2xl shadow-sm;
+  }
+
+  /* ── Primary gradient background ── */
+  .gradient-hero {
+    background: linear-gradient(160deg, #F5EFFF 0%, #CDC1FF 100%);
+  }
+  .dark .gradient-hero {
+    background: linear-gradient(160deg, #121212 0%, #1E1E27 100%);
+  }
+
+  /* ── Stat number highlight ── */
+  .stat-number {
+    @apply text-3xl font-bold text-primary;
+  }
+
+  /* ── Section spacing ── */
+  .section-gap {
+    @apply py-8 md:py-12;
+  }
+
+  /* ── Card hover lift ── */
+  .card-hover {
+    @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;
+  }
+
+  /* ── Progress bar brand fill ── */
+  .progress-brand [data-state] {
+    @apply bg-primary;
+  }
+
+  /* ── Typing indicator dots ── */
+  .typing-dot {
+    @apply w-2 h-2 rounded-full bg-secondary inline-block;
+    animation: typing-bounce 1.2s infinite ease-in-out;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes typing-bounce {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+    40%           { transform: translateY(-6px); opacity: 1; }
+  }
+
+  /* ── Shimmer skeleton ── */
+  .shimmer {
+    background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--secondary)/0.3) 50%, hsl(var(--muted)) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s infinite;
+  }
+  @keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* ── Dark mode theme transition ── */
+  body, .dark body {
+    transition: background-color 200ms ease, color 200ms ease;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     LANDING PAGE — Modern SaaS styles (Light theme, performance-first)
+     ═══════════════════════════════════════════════════════════════════ */
+
+  /* Hero gradient — soft white → light blue → light purple */
+  .hero-gradient-bg {
+    background: linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #f0f7ff 35%,
+      #eef2ff 65%,
+      #f5f0ff 100%
+    );
+    background-size: 100% 200%;
+    animation: hero-gradient-shift 20s ease-in-out infinite;
+  }
+  .dark .hero-gradient-bg {
+    background: linear-gradient(
+      180deg,
+      #0a0a0f 0%,
+      #0f1029 35%,
+      #12102e 65%,
+      #0e0c1a 100%
+    );
+    background-size: 100% 200%;
+    animation: hero-gradient-shift 20s ease-in-out infinite;
+  }
+
+  @keyframes hero-gradient-shift {
+    0%, 100% { background-position: 50% 0%; }
+    50%      { background-position: 50% 100%; }
+  }
+
+  /* Subtle dot grid pattern for SaaS feel */
+  .hero-dot-grid {
+    background-image: radial-gradient(circle, #cbd5e1 0.8px, transparent 0.8px);
+    background-size: 24px 24px;
+  }
+
+  /* ── CSS-only floating blobs for Hero ─────────────────────────────── */
+  .hero-blob {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.45;
+    will-change: transform;
+    animation: blob-float 18s ease-in-out infinite;
+  }
+  .hero-blob--blue {
+    width: 400px; height: 400px;
+    top: 5%; right: 10%;
+    background: radial-gradient(circle, rgba(59,130,246,0.2) 0%, transparent 70%);
+    filter: blur(80px);
+    animation-delay: 0s;
+  }
+  .hero-blob--purple {
+    width: 350px; height: 350px;
+    bottom: 15%; left: 5%;
+    background: radial-gradient(circle, rgba(147,51,234,0.18) 0%, transparent 70%);
+    filter: blur(70px);
+    animation-delay: -6s;
+    animation-duration: 22s;
+  }
+  .hero-blob--cyan {
+    width: 250px; height: 250px;
+    top: 40%; left: 30%;
+    background: radial-gradient(circle, rgba(6,182,212,0.15) 0%, transparent 70%);
+    filter: blur(60px);
+    animation-delay: -10s;
+    animation-duration: 16s;
+  }
+  @keyframes blob-float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25%      { transform: translate(15px, -20px) scale(1.05); }
+    50%      { transform: translate(-10px, -35px) scale(1.08); }
+    75%      { transform: translate(12px, -12px) scale(1.03); }
+  }
+  .cta-gradient-bg {
+    background: linear-gradient(
+      135deg,
+      #7c3aed 0%,
+      #6366f1 30%,
+      #4f46e5 50%,
+      #7c3aed 75%,
+      #a855f7 100%
+    );
+    background-size: 300% 300%;
+    animation: cta-gradient-shift 12s ease-in-out infinite;
+  }
+  @keyframes cta-gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+  }
+
+  /* CTA button glow hover */
+  .landing-cta-btn {
+    position: relative;
+    overflow: hidden;
+  }
+  .landing-cta-btn::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(45deg, #a855f7, #6366f1, #3b82f6, #a855f7);
+    background-size: 400% 400%;
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    animation: glow-border-spin 3s linear infinite;
+  }
+  .landing-cta-btn:hover::before {
+    opacity: 1;
+  }
+  @keyframes glow-border-spin {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* ── CSS-only floating orbs (kept for other sections) ─────────────── */
+  .landing-orb {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.5;
+    will-change: transform;
+    animation: orb-float 16s ease-in-out infinite;
+  }
+  .landing-orb--purple {
+    width: 280px; height: 280px;
+    top: 8%; left: 5%;
+    background: radial-gradient(circle, rgba(168,85,247,0.25) 0%, transparent 70%);
+    filter: blur(60px);
+    animation-delay: 0s;
+  }
+  .landing-orb--blue {
+    width: 360px; height: 360px;
+    top: 28%; right: -3%;
+    background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+    filter: blur(70px);
+    animation-delay: -5s;
+    animation-duration: 20s;
+  }
+  .landing-orb--orange {
+    width: 200px; height: 200px;
+    bottom: 12%; left: 18%;
+    background: radial-gradient(circle, rgba(251,146,60,0.2) 0%, transparent 70%);
+    filter: blur(50px);
+    animation-delay: -8s;
+    animation-duration: 18s;
+  }
+  @keyframes orb-float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25%      { transform: translate(12px, -18px) scale(1.04); }
+    50%      { transform: translate(-8px, -30px) scale(1.08); }
+    75%      { transform: translate(15px, -10px) scale(1.02); }
+  }
+
+  /* ── CSS-only CTA particles ──────────────────────────────────────── */
+  .cta-particle {
+    position: absolute;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    animation: particle-drift 5s ease-in-out infinite;
+  }
+  @keyframes particle-drift {
+    0%, 100% { transform: translateY(0); opacity: 0.2; }
+    50%      { transform: translateY(-50px); opacity: 0.7; }
+  }
+
+  /* Landing page layout */
+  .landing-page {
+    overflow-x: hidden;
+  }
+
+  /* ── Pill quick-action button ── */
+  .pill-action {
+    @apply rounded-full border border-primary text-primary text-sm px-4 py-1.5 font-medium
+           hover:bg-primary hover:text-white transition-all duration-150;
+  }
+
+  /* ── Active nav underline ── */
+  .nav-active {
+    @apply relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:rounded-full;
+  }
+
+  /* ── Sidebar active item ── */
+  .sidebar-active {
+    @apply bg-secondary/60 dark:bg-secondary/20 text-primary font-medium
+           border-l-4 border-primary pl-3;
+  }
+
+  /* ── Toast accent bar ── */
+  .toast-info    { @apply border-l-4 border-blue-500; }
+  .toast-success { @apply border-l-4 border-green-500; }
+  .toast-warning { @apply border-l-4 border-yellow-500; }
+  .toast-error   { @apply border-l-4 border-red-500; }
+
+  /* ── Circular progress ring ── */
+  .ring-progress {
+    stroke: hsl(var(--primary));
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.6s ease;
+  }
+  .ring-track {
+    stroke: hsl(var(--muted));
+  }
+}

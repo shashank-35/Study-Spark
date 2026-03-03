@@ -1,0 +1,1026 @@
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+// pdf-parse's package entry executes a test file on import in some environments.
+// To avoid that, require the implementation file directly using createRequire.
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const pdfParse = require('pdf-parse/lib/pdf-parse.js');
+
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const PORT = process.env.API_PORT ? Number(process.env.API_PORT) : 8787;
+
+// Gemini API configuration
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+
+// Validate API key
+if (!GEMINI_API_KEY) {
+  console.error("❌ ERROR: Gemini API key is not set!");
+  console.error("Please set the GEMINI_API_KEY environment variable.");
+  console.error("Get your API key from: https://makersuite.google.com/app/apikey");
+  process.exit(1);
+}
+
+console.log("🔑 Gemini API Key:", GEMINI_API_KEY.substring(0, 10) + "...");
+console.log("🌐 Gemini API URL:", GEMINI_API_URL);
+
+app.use(cors());
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true }));
+
+// Ensure directories
+const uploadsDir = path.join(__dirname, "uploads");
+const dataDir = path.join(__dirname, "data");
+const textsDir = path.join(dataDir, "texts");
+fs.mkdirSync(uploadsDir, { recursive: true });
+fs.mkdirSync(textsDir, { recursive: true });
+
+// Simple JSON storage for file metadata
+const metaPath = path.join(dataDir, "files.json");
+function readMeta() {
+  try {
+    const raw = fs.readFileSync(metaPath, "utf-8");
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
+}
+function writeMeta(list) {
+  fs.mkdirSync(path.dirname(metaPath), { recursive: true });
+  fs.writeFileSync(metaPath, JSON.stringify(list, null, 2));
+}
+
+// Static serving for uploaded files
+app.use("/uploads", express.static(uploadsDir));
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadsDir);
+  },
+  filename: function (req, file, cb) {
+    const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname || "");
+    cb(null, unique + ext);
+  },
+});
+
+const upload = multer({ storage });
+
+async function extractTextFromFile(filePath, mimeType) {
+  try {
+    if (mimeType && mimeType.includes("pdf")) {
+      const buffer = fs.readFileSync(filePath);
+      const data = await pdfParse(buffer);
+      return data.text || "";
+    }
+    // Fallback: treat as text
+    return fs.readFileSync(filePath, "utf-8");
+  } catch {
+    return "";
+  }
+}
+
+function suggestQuestionsFromText(text) {
+  if (!text) return [];
+  const sentences = text
+    .split(/\n\s*\n|(?<=[.!?])\s+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 20)
+    .slice(0, 500);
+
+  const keywords = ["what", "why", "how", "explain", "define", "difference", "advantages", "disadvantages", "uses", "algorithm"];
+  const questions = [];
+  for (const s of sentences) {
+    const lower = s.toLowerCase();
+    if (s.endsWith("?") || keywords.some((k) => lower.includes(k))) {
+      questions.push(s.replace(/^[0-9]+\.|^[*-]\s*/, ""));
+    }
+    if (questions.length >= 25) break;
+  }
+  return questions;
+}
+
+// Gemini API function
+async function generateGeminiResponse(messages, contextText = "") {
+  try {
+    console.log('Generating Gemini response with:', {
+      messagesCount: messages.length,
+      contextLength: contextText.length,
+      lastMessage: messages[messages.length - 1]?.content
+    });
+
+    const systemPrompt = `You are Study Spark, a helpful and enthusiastic BCA (Bachelor of Computer Applications) study assistant. You help students understand programming concepts, explain computer science topics, create study plans, and provide guidance for their BCA journey.
+
+Key characteristics:
+- Be encouraging and motivational
+- Use simple, clear explanations with examples
+- Focus on BCA subjects like C programming, Java, OOP, Database Management, Web Development, Data Structures, Computer Networks
+- Provide practical examples and real-world applications
+- Be concise but thorough
+- Use emojis occasionally to keep it engaging
+
+${contextText ? `Context from uploaded study materials:\n${contextText}\n\nUse this context to provide more relevant and specific answers.` : ''}`;
+
+    const userMessage = messages[messages.length - 1]?.content || "Hello";
+    
+    const requestBody = {
+      contents: [
+        {
+          role: "user",
+          parts: [
+            {
+              text: `${systemPrompt}\n\nUser message: ${userMessage}`
+            }
+          ]
+        }
+      ],
+      generationConfig: {
+        temperature: 0.7,
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 1024,
+      },
+      safetySettings: [
+        {
+          category: "HARM_CATEGORY_HARASSMENT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_HATE_SPEECH",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        }
+      ]
+    };
+
+    console.log('Making Gemini API request to:', GEMINI_API_URL);
+    console.log('Request body:', JSON.stringify(requestBody, null, 2));
+
+    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    console.log('Gemini API response status:', response.status);
+    console.log('Gemini API response headers:', Object.fromEntries(response.headers.entries()));
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Gemini API error response:', errorText);
+      throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log('Gemini API response data:', JSON.stringify(data, null, 2));
+    
+    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+      const responseText = data.candidates[0].content.parts[0].text;
+      console.log('Gemini response text length:', responseText.length);
+      return responseText;
+    } else {
+      console.error('Invalid Gemini response format:', data);
+      throw new Error('Invalid response format from Gemini API');
+    }
+  } catch (error) {
+    console.error('Gemini API error:', error);
+    return null;
+  }
+}
+
+app.post("/api/upload", upload.single("file"), async (req, res) => {
+  try {
+    console.log('Upload request received:', {
+      body: req.body,
+      file: req.file ? {
+        originalname: req.file.originalname,
+        size: req.file.size,
+        mimetype: req.file.mimetype
+      } : 'No file'
+    });
+
+    if (!req.file) {
+      console.log('No file in upload request');
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+    
+    const subject = (req.body.subject || "").toString();
+    const scope = (req.body.scope || "subject").toString(); // 'subject' or 'user'
+    const userId = (req.body.userId || "").toString();
+
+    console.log('Processing file:', req.file.originalname);
+    
+    const text = await extractTextFromFile(req.file.path, req.file.mimetype);
+    console.log('Extracted text length:', text.length);
+    
+    const id = path.basename(req.file.filename, path.extname(req.file.filename));
+    const textFilePath = path.join(textsDir, id + ".txt");
+    fs.writeFileSync(textFilePath, text, "utf-8");
+
+    const list = readMeta();
+    const record = {
+      id,
+      originalName: req.file.originalname,
+      storedName: req.file.filename,
+      size: req.file.size,
+      mimetype: req.file.mimetype,
+      uploadedAt: new Date().toISOString(),
+      subject: subject || null,
+      scope,
+      userId: userId || null,
+    };
+    list.push(record);
+    writeMeta(list);
+
+    const suggestions = suggestQuestionsFromText(text);
+    console.log('Generated suggestions:', suggestions.length);
+    
+    const response = {
+      id,
+      name: req.file.originalname,
+      subject: record.subject,
+      scope: record.scope,
+      url: `/uploads/${req.file.filename}`,
+      questionSuggestions: suggestions.slice(0, 15),
+      preview: text.slice(0, 1000),
+    };
+    
+    console.log('Upload successful:', response.id);
+    return res.json(response);
+  } catch (e) {
+    console.error('Upload error:', e);
+    return res.status(500).json({ error: "Upload failed: " + e.message });
+  }
+});
+
+app.get("/api/subjects", (req, res) => {
+  const list = readMeta();
+  const subjectToCount = {};
+  for (const r of list) {
+    const s = r.subject || "Uncategorized";
+    subjectToCount[s] = (subjectToCount[s] || 0) + 1;
+  }
+  const items = Object.entries(subjectToCount).map(([name, count]) => ({ name, count }));
+  res.json({ subjects: items });
+});
+
+app.get("/api/subjects/:subject/files", (req, res) => {
+  const subjectName = req.params.subject;
+  const list = readMeta().filter((r) => (r.subject || "") === subjectName);
+  const files = list.map((r) => ({
+    id: r.id,
+    name: r.originalName,
+    url: `/uploads/${r.storedName}`,
+    uploadedAt: r.uploadedAt,
+    size: r.size,
+    mimetype: r.mimetype,
+  }));
+  res.json({ files });
+});
+
+function loadTextById(id) {
+  try {
+    const p = path.join(textsDir, id + ".txt");
+    return fs.readFileSync(p, "utf-8");
+  } catch {
+    return "";
+  }
+}
+
+function generateGeneralBCAResponse(question) {
+  const q = question.toLowerCase();
+
+  // Programming concepts
+  if (q.includes('c programming') || q.includes('c language')) {
+    return `🌟 **C Programming Fundamentals**
+
+C is a powerful, general-purpose programming language that serves as the foundation for many modern languages:
+
+**Key Concepts:**
+• **Variables & Data Types**: int, float, char, double, etc.
+• **Control Structures**: if-else, loops (for, while, do-while), switch
+• **Functions**: Modular code organization with parameters and return values
+• **Arrays**: Fixed-size collections of similar data types
+• **Pointers**: Variables that store memory addresses (advanced topic)
+• **Structures**: User-defined data types for complex data
+
+**Why Learn C?**
+• Foundation for system programming
+• Helps understand how computers work at a low level
+• Essential for BCA curriculum
+• Used in embedded systems and operating systems
+
+💡 **Quick Tip**: Start with basic programs like "Hello World", then move to variables, loops, and functions!
+
+What specific aspect of C programming would you like to explore?`;
+  }
+
+  if (q.includes('pointer') || q.includes('pointers')) {
+    return `📍 **Understanding Pointers in C**
+
+Pointers are one of the most powerful (and confusing!) concepts in C programming:
+
+**What are Pointers?**
+• Variables that store memory addresses
+• Allow direct memory manipulation
+• Essential for dynamic memory allocation
+
+**Basic Syntax:**
+\`\`\`c
+int x = 10;        // Regular variable
+int *ptr = &x;     // Pointer declaration and assignment
+printf("%d", *ptr); // Dereferencing (getting the value)
+\`\`\`
+
+**Common Uses:**
+• **Dynamic Memory**: \`malloc()\`, \`calloc()\`, \`free()\`
+• **Arrays**: Pointers and arrays are closely related
+• **Functions**: Pass by reference, function pointers
+• **Strings**: Working with character arrays
+
+**Important Notes:**
+• Always initialize pointers (avoid wild pointers)
+• Check for NULL before dereferencing
+• Memory leaks happen when you forget to free allocated memory
+
+🎯 **Example**: A pointer to an integer takes the address of an int variable and can access/modify its value indirectly.
+
+Would you like me to explain any specific pointer concept or show you some code examples?`;
+  }
+
+  if (q.includes('java') || q.includes('oop') || q.includes('object oriented')) {
+    return `☕ **Java & Object-Oriented Programming**
+
+Java is a robust, object-oriented programming language perfect for BCA students:
+
+**OOP Fundamentals:**
+• **Classes & Objects**: Blueprints and instances
+• **Encapsulation**: Data hiding with private/public access
+• **Inheritance**: Code reuse through parent-child relationships
+• **Polymorphism**: One interface, multiple implementations
+• **Abstraction**: Showing only essential features
+
+**Java Advantages:**
+• Platform independent ("Write once, run anywhere")
+• Automatic memory management (Garbage Collection)
+• Rich standard library
+• Strong community support
+
+**Key Topics for BCA:**
+• Basic syntax and data types
+• Classes, objects, and constructors
+• Exception handling (try-catch)
+• Collections framework
+• Multithreading basics
+• File I/O operations
+
+💻 **Example**: Understanding inheritance helps you reuse code and create hierarchical relationships between classes.
+
+What specific Java or OOP concept would you like me to explain in detail?`;
+  }
+
+  if (q.includes('database') || q.includes('sql') || q.includes('dbms')) {
+    return `🗄️ **Database Management Systems (DBMS)**
+
+Databases are crucial for storing, managing, and retrieving data efficiently:
+
+**Core Concepts:**
+• **Relational Databases**: Tables with rows and columns (MySQL, PostgreSQL)
+• **SQL Queries**: SELECT, INSERT, UPDATE, DELETE operations
+• **Normalization**: Organizing data to reduce redundancy
+• **Primary Keys**: Unique identifiers for records
+• **Foreign Keys**: Links between related tables
+• **Indexes**: Speed up data retrieval
+
+**Essential SQL Commands:**
+\`\`\`sql
+-- Create table
+CREATE TABLE students (id INT PRIMARY KEY, name VARCHAR(50));
+
+-- Insert data
+INSERT INTO students VALUES (1, 'John Doe');
+
+-- Query data
+SELECT * FROM students WHERE id = 1;
+\`\`\`
+
+**BCA Topics:**
+• ER Diagrams (Entity-Relationship)
+• Database design principles
+• Transaction management (ACID properties)
+• Stored procedures and triggers
+• NoSQL vs Relational databases
+
+🎯 **Pro Tip**: Understanding normalization helps prevent data anomalies and ensures data integrity.
+
+What specific database concept or SQL operation would you like me to explain?`;
+  }
+
+  if (q.includes('data structure') || q.includes('algorithm')) {
+    return `🧠 **Data Structures & Algorithms**
+
+The backbone of efficient programming and problem-solving:
+
+**Essential Data Structures:**
+• **Arrays**: Fixed-size, contiguous memory locations
+• **Linked Lists**: Dynamic size, non-contiguous memory
+• **Stacks**: LIFO (Last In, First Out) operations
+• **Queues**: FIFO (First In, First Out) operations
+• **Trees**: Hierarchical data (Binary Tree, BST)
+• **Graphs**: Networks of connected nodes
+• **Hash Tables**: Key-value pair storage for fast lookup
+
+**Algorithm Complexity:**
+• **O(1)**: Constant time (best case)
+• **O(log n)**: Logarithmic (binary search)
+• **O(n)**: Linear (simple search)
+• **O(n²)**: Quadratic (bubble sort)
+
+**BCA Focus Areas:**
+• Understanding time and space complexity
+• Choosing the right data structure for problems
+• Common sorting and searching algorithms
+• Recursion and its applications
+• Dynamic programming basics
+
+💡 **Quick Tip**: Always consider both time and space complexity when choosing algorithms!
+
+Which data structure or algorithm concept would you like me to explain with examples?`;
+  }
+
+  if (q.includes('web development') || q.includes('html') || q.includes('css') || q.includes('javascript')) {
+    return `🌐 **Web Development Fundamentals**
+
+Building modern websites and web applications:
+
+**Core Technologies:**
+• **HTML**: Structure and content of web pages
+• **CSS**: Styling and layout (colors, fonts, responsive design)
+• **JavaScript**: Interactive functionality and dynamic content
+• **Responsive Design**: Works on all devices (mobile-first approach)
+
+**Modern Web Development:**
+• **Frontend Frameworks**: React, Vue, Angular
+• **Backend Technologies**: Node.js, Python Django, PHP
+• **Databases**: MongoDB, MySQL for web apps
+• **APIs**: RESTful services for data exchange
+
+**BCA Learning Path:**
+1. **HTML/CSS Basics**: Structure and styling
+2. **JavaScript Fundamentals**: Variables, functions, DOM manipulation
+3. **Responsive Design**: Media queries, flexbox, grid
+4. **Modern Frameworks**: React components and state management
+5. **Backend Integration**: APIs and database connections
+
+🎨 **Pro Tip**: Start with vanilla HTML/CSS/JavaScript before moving to frameworks!
+
+What specific web development topic would you like me to cover in detail?`;
+  }
+
+function generateGeneralBCAResponse(question) {
+  const q = question.toLowerCase();
+
+  // BCA-specific topics
+  if (q.includes('c programming') || q.includes('c language')) {
+    return `🌟 **C Programming Fundamentals**
+
+C is a powerful, general-purpose programming language that serves as the foundation for many modern languages:
+
+**Key Concepts:**
+• **Variables & Data Types**: int, float, char, double, etc.
+• **Control Structures**: if-else, loops (for, while, do-while), switch
+• **Functions**: Modular code organization with parameters and return values
+• **Arrays**: Fixed-size collections of similar data types
+• **Pointers**: Variables that store memory addresses (advanced topic)
+• **Structures**: User-defined data types for complex data
+
+**Why Learn C?**
+• Foundation for system programming
+• Helps understand how computers work at a low level
+• Essential for BCA curriculum
+• Used in embedded systems and operating systems
+
+💡 **Quick Tip**: Start with basic programs like "Hello World", then move to variables, loops, and functions!
+
+What specific aspect of C programming would you like to explore?`;
+  }
+
+  if (q.includes('pointer') || q.includes('pointers')) {
+    return `📍 **Understanding Pointers in C**
+
+Pointers are one of the most powerful (and confusing!) concepts in C programming:
+
+**What are Pointers?**
+• Variables that store memory addresses
+• Allow direct memory manipulation
+• Essential for dynamic memory allocation
+
+**Basic Syntax:**
+\`\`\`c
+int x = 10;        // Regular variable
+int *ptr = &x;     // Pointer declaration and assignment
+printf("%d", *ptr); // Dereferencing (getting the value)
+\`\`\`
+
+**Common Uses:**
+• **Dynamic Memory**: \`malloc()\`, \`calloc()\`, \`free()\`
+• **Arrays**: Pointers and arrays are closely related
+• **Functions**: Pass by reference, function pointers
+• **Strings**: Working with character arrays
+
+**Important Notes:**
+• Always initialize pointers (avoid wild pointers)
+• Check for NULL before dereferencing
+• Memory leaks happen when you forget to free allocated memory
+
+🎯 **Example**: A pointer to an integer takes the address of an int variable and can access/modify its value indirectly.
+
+Would you like me to explain any specific pointer concept or show you some code examples?`;
+  }
+
+  if (q.includes('java') || q.includes('oop') || q.includes('object oriented')) {
+    return `☕ **Java & Object-Oriented Programming**
+
+Java is a robust, object-oriented programming language perfect for BCA students:
+
+**OOP Fundamentals:**
+• **Classes & Objects**: Blueprints and instances
+• **Encapsulation**: Data hiding with private/public access
+• **Inheritance**: Code reuse through parent-child relationships
+• **Polymorphism**: One interface, multiple implementations
+• **Abstraction**: Showing only essential features
+
+**Java Advantages:**
+• Platform independent ("Write once, run anywhere")
+• Automatic memory management (Garbage Collection)
+• Rich standard library
+• Strong community support
+
+**Key Topics for BCA:**
+• Basic syntax and data types
+• Classes, objects, and constructors
+• Exception handling (try-catch)
+• Collections framework
+• Multithreading basics
+• File I/O operations
+
+💻 **Example**: Understanding inheritance helps you reuse code and create hierarchical relationships between classes.
+
+What specific Java or OOP concept would you like me to explain in detail?`;
+  }
+
+  if (q.includes('database') || q.includes('sql') || q.includes('dbms')) {
+    return `🗄️ **Database Management Systems (DBMS)**
+
+Databases are crucial for storing, managing, and retrieving data efficiently:
+
+**Core Concepts:**
+• **Relational Databases**: Tables with rows and columns (MySQL, PostgreSQL)
+• **SQL Queries**: SELECT, INSERT, UPDATE, DELETE operations
+• **Normalization**: Organizing data to reduce redundancy
+• **Primary Keys**: Unique identifiers for records
+• **Foreign Keys**: Links between related tables
+• **Indexes**: Speed up data retrieval
+
+**Essential SQL Commands:**
+\`\`\`sql
+-- Create table
+CREATE TABLE students (id INT PRIMARY KEY, name VARCHAR(50));
+
+-- Insert data
+INSERT INTO students VALUES (1, 'John Doe');
+
+-- Query data
+SELECT * FROM students WHERE id = 1;
+\`\`\`
+
+**BCA Topics:**
+• ER Diagrams (Entity-Relationship)
+• Database design principles
+• Transaction management (ACID properties)
+• Stored procedures and triggers
+• NoSQL vs Relational databases
+
+🎯 **Pro Tip**: Understanding normalization helps prevent data anomalies and ensures data integrity.
+
+What specific database concept or SQL operation would you like me to explain?`;
+  }
+
+  if (q.includes('data structure') || q.includes('algorithm')) {
+    return `🧠 **Data Structures & Algorithms**
+
+The backbone of efficient programming and problem-solving:
+
+**Essential Data Structures:**
+• **Arrays**: Fixed-size, contiguous memory locations
+• **Linked Lists**: Dynamic size, non-contiguous memory
+• **Stacks**: LIFO (Last In, First Out) operations
+• **Queues**: FIFO (First In, First Out) operations
+• **Trees**: Hierarchical data (Binary Tree, BST)
+• **Graphs**: Networks of connected nodes
+• **Hash Tables**: Key-value pair storage for fast lookup
+
+**Algorithm Complexity:**
+• **O(1)**: Constant time (best case)
+• **O(log n)**: Logarithmic (binary search)
+• **O(n)**: Linear (simple search)
+• **O(n²)**: Quadratic (bubble sort)
+
+**BCA Focus Areas:**
+• Understanding time and space complexity
+• Choosing the right data structure for problems
+• Common sorting and searching algorithms
+• Recursion and its applications
+• Dynamic programming basics
+
+💡 **Quick Tip**: Always consider both time and space complexity when choosing algorithms!
+
+Which data structure or algorithm concept would you like me to explain with examples?`;
+  }
+
+  if (q.includes('web development') || q.includes('html') || q.includes('css') || q.includes('javascript')) {
+    return `🌐 **Web Development Fundamentals**
+
+Building modern websites and web applications:
+
+**Core Technologies:**
+• **HTML**: Structure and content of web pages
+• **CSS**: Styling and layout (colors, fonts, responsive design)
+• **JavaScript**: Interactive functionality and dynamic content
+• **Responsive Design**: Works on all devices (mobile-first approach)
+
+**Modern Web Development:**
+• **Frontend Frameworks**: React, Vue, Angular
+• **Backend Technologies**: Node.js, Python Django, PHP
+• **Databases**: MongoDB, MySQL for web apps
+• **APIs**: RESTful services for data exchange
+
+**BCA Learning Path:**
+1. **HTML/CSS Basics**: Structure and styling
+2. **JavaScript Fundamentals**: Variables, functions, DOM manipulation
+3. **Responsive Design**: Media queries, flexbox, grid
+4. **Modern Frameworks**: React components and state management
+5. **Backend Integration**: APIs and database connections
+
+🎨 **Pro Tip**: Start with vanilla HTML/CSS/JavaScript before moving to frameworks!
+
+What specific web development topic would you like me to cover in detail?`;
+  }
+
+  // General technology topics
+  if (q.includes('machine learning') || q.includes('ml') || q.includes('ai') || q.includes('artificial intelligence')) {
+    return `🤖 **Machine Learning & Artificial Intelligence**
+
+Machine Learning is a subset of AI that enables computers to learn and improve from experience without being explicitly programmed:
+
+**Key Concepts:**
+• **Supervised Learning**: Learning from labeled training data (classification, regression)
+• **Unsupervised Learning**: Finding patterns in unlabeled data (clustering, dimensionality reduction)
+• **Reinforcement Learning**: Learning through trial and error with rewards/penalties
+• **Neural Networks**: Brain-inspired algorithms that recognize patterns
+• **Deep Learning**: Neural networks with multiple layers for complex tasks
+
+**Popular Algorithms:**
+• **Linear Regression**: Predicting continuous values
+• **Decision Trees**: Tree-based classification and regression
+• **Random Forest**: Ensemble of decision trees
+• **Support Vector Machines**: Finding optimal decision boundaries
+• **Neural Networks**: Deep learning models for complex patterns
+
+**Real-World Applications:**
+• **Image Recognition**: Self-driving cars, medical diagnosis
+• **Natural Language Processing**: Chatbots, translation services
+• **Recommendation Systems**: Netflix, Amazon suggestions
+• **Fraud Detection**: Banking and financial security
+• **Predictive Analytics**: Weather forecasting, stock market
+
+**Getting Started:**
+1. Learn Python programming
+2. Study statistics and linear algebra
+3. Practice with libraries like scikit-learn, TensorFlow
+4. Work on real datasets and projects
+
+💡 **Pro Tip**: Start with simple datasets and gradually move to more complex problems!
+
+What specific ML/AI concept would you like me to explain in more detail?`;
+  }
+
+  if (q.includes('cybersecurity') || q.includes('security') || q.includes('hacking')) {
+    return `🔒 **Cybersecurity Fundamentals**
+
+Protecting computer systems, networks, and data from digital attacks:
+
+**Core Security Concepts:**
+• **Confidentiality**: Information only accessible to authorized users
+• **Integrity**: Data remains accurate and unaltered
+• **Availability**: Systems and data accessible when needed
+• **Authentication**: Verifying user identity
+• **Authorization**: Granting appropriate access permissions
+
+**Common Threats:**
+• **Malware**: Viruses, trojans, ransomware
+• **Phishing**: Social engineering attacks via email/fake websites
+• **DDoS Attacks**: Overwhelming systems with traffic
+• **SQL Injection**: Exploiting database vulnerabilities
+• **Man-in-the-Middle**: Intercepting communications
+
+**Security Best Practices:**
+• Use strong, unique passwords for each account
+• Enable two-factor authentication (2FA)
+• Keep software and systems updated
+• Use antivirus/antimalware software
+• Be cautious with email attachments and links
+• Backup important data regularly
+
+**Career Paths in Cybersecurity:**
+• Security Analyst
+• Penetration Tester (Ethical Hacker)
+• Security Engineer
+• Cryptographer
+• Incident Response Specialist
+
+🛡️ **Remember**: Security is everyone's responsibility, not just IT professionals!
+
+What specific cybersecurity topic would you like me to explain further?`;
+  }
+
+  if (q.includes('blockchain') || q.includes('cryptocurrency') || q.includes('bitcoin')) {
+    return `⛓️ **Blockchain Technology**
+
+A decentralized, distributed ledger technology that maintains a continuously growing list of records:
+
+**How Blockchain Works:**
+• **Blocks**: Contain transaction data and are linked together
+• **Cryptographic Hash**: Each block contains hash of previous block
+• **Consensus Mechanisms**: Proof of Work, Proof of Stake ensure agreement
+• **Decentralization**: No single point of control or failure
+• **Immutability**: Once recorded, data cannot be altered
+
+**Key Features:**
+• **Transparency**: All participants can view transactions
+• **Security**: Cryptographic protection against tampering
+• **Decentralization**: No central authority required
+• **Traceability**: Complete transaction history
+• **Smart Contracts**: Self-executing contracts with terms in code
+
+**Applications Beyond Cryptocurrency:**
+• **Supply Chain Management**: Track products from origin to consumer
+• **Healthcare**: Secure patient data sharing
+• **Voting Systems**: Tamper-proof election processes
+• **Real Estate**: Streamlined property transactions
+• **Digital Identity**: Secure, decentralized identity verification
+
+**Popular Platforms:**
+• **Bitcoin**: Digital currency and payment system
+• **Ethereum**: Smart contract platform
+• **Hyperledger**: Enterprise blockchain solutions
+• **Binance Smart Chain**: DeFi and dApp platform
+
+🚀 **Future Impact**: Blockchain is revolutionizing finance, supply chains, and digital trust!
+
+What aspect of blockchain technology interests you most?`;
+  }
+
+  if (q.includes('cloud computing') || q.includes('aws') || q.includes('azure') || q.includes('gcp')) {
+    return `☁️ **Cloud Computing**
+
+Delivering computing services over the internet, including servers, storage, databases, networking, software, and more:
+
+**Service Models:**
+• **IaaS (Infrastructure as a Service)**: Virtual machines, storage, networks
+• **PaaS (Platform as a Service)**: Development platforms, databases, middleware
+• **SaaS (Software as a Service)**: Ready-to-use applications (Gmail, Dropbox)
+
+**Deployment Models:**
+• **Public Cloud**: Services offered over public internet (AWS, Azure, GCP)
+• **Private Cloud**: Dedicated infrastructure for single organization
+• **Hybrid Cloud**: Combination of public and private clouds
+• **Multi-Cloud**: Using multiple public cloud providers
+
+**Major Cloud Providers:**
+• **Amazon Web Services (AWS)**: Largest market share, comprehensive services
+• **Microsoft Azure**: Strong enterprise integration, Windows-focused
+• **Google Cloud Platform (GCP)**: AI/ML expertise, data analytics strength
+
+**Benefits:**
+• **Cost Efficiency**: Pay only for what you use
+• **Scalability**: Easily scale resources up or down
+• **Reliability**: High availability and disaster recovery
+• **Security**: Advanced security features and compliance
+• **Innovation**: Access to latest technologies and services
+
+**Popular Services:**
+• **Compute**: EC2 (AWS), Virtual Machines (Azure), Compute Engine (GCP)
+• **Storage**: S3 (AWS), Blob Storage (Azure), Cloud Storage (GCP)
+• **Databases**: RDS (AWS), SQL Database (Azure), Cloud SQL (GCP)
+
+🌐 **Cloud Skills**: Essential for modern IT careers!
+
+What specific cloud computing topic would you like me to explain?`;
+  }
+
+  if (q.includes('mobile development') || q.includes('android') || q.includes('ios') || q.includes('app development')) {
+    return `📱 **Mobile App Development**
+
+Creating applications for mobile devices like smartphones and tablets:
+
+**Native Development:**
+• **Android (Java/Kotlin)**: Java or Kotlin programming for Android apps
+• **iOS (Swift/Objective-C)**: Swift or Objective-C for iPhone/iPad apps
+• **Cross-platform**: React Native, Flutter, Xamarin for both platforms
+
+**Development Process:**
+1. **Planning**: Define features, target audience, monetization
+2. **Design**: Create user interface and user experience
+3. **Development**: Write code, integrate APIs, test functionality
+4. **Testing**: Manual and automated testing across devices
+5. **Deployment**: Publish to App Store/Play Store
+6. **Maintenance**: Updates, bug fixes, feature additions
+
+**Essential Skills:**
+• **Programming Languages**: Java, Kotlin, Swift, JavaScript/TypeScript
+• **UI/UX Design**: Understanding of mobile interfaces
+• **APIs Integration**: RESTful APIs, JSON handling
+• **Database Management**: SQLite, Realm, Firebase
+• **Version Control**: Git for code management
+
+**Popular Tools & Frameworks:**
+• **Android Studio**: Official IDE for Android development
+• **Xcode**: Apple's development environment for iOS
+• **React Native**: Facebook's framework for cross-platform apps
+• **Flutter**: Google's UI toolkit for beautiful, fast apps
+
+**Monetization Strategies:**
+• **Free with Ads**: Display advertisements
+• **Freemium**: Basic features free, premium features paid
+• **Paid Apps**: One-time purchase price
+• **In-App Purchases**: Unlock additional content or features
+
+💰 **App Market**: Billions of smartphone users create huge opportunities!
+
+What specific aspect of mobile development interests you?`;
+  }
+
+function scoreChunksAgainstQuery(chunks, query) {
+  const terms = query
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((t) => t.length > 2);
+  return chunks
+    .map((c, i) => {
+      const text = c.toLowerCase();
+      let score = 0;
+      for (const t of terms) {
+        const occurrences = (text.match(new RegExp(`\\b${t}\\b`, "g")) || []).length;
+        score += occurrences * 2;
+        if (text.includes(t)) score += 1;
+      }
+      return { idx: i, score, text: c };
+    })
+    .sort((a, b) => b.score - a.score);
+}
+
+app.post("/api/chat", async (req, res) => {
+  try {
+    console.log('Chat request received:', {
+      body: req.body,
+      messagesCount: req.body.messages?.length || 0
+    });
+    
+    const { messages = [], subject = null, fileId = null } = req.body || {};
+    
+    if (!messages || messages.length === 0) {
+      console.log('No messages in chat request');
+      return res.json({ content: "Please provide a message to chat." });
+    }
+
+    let contextText = "";
+    if (fileId) {
+      console.log('Loading context from file ID:', fileId);
+      contextText += loadTextById(fileId);
+      console.log('File context length:', contextText.length);
+    }
+    if (!contextText && subject) {
+      console.log('Loading context from subject:', subject);
+      const meta = readMeta().filter((r) => (r.subject || "") === subject);
+      for (const m of meta) {
+        contextText += "\n\n" + loadTextById(m.id);
+        if (contextText.length > 250000) break;
+      }
+      console.log('Subject context length:', contextText.length);
+    }
+    if (!contextText) {
+      console.log('Using fallback context from all files');
+      // fallback: use all subject files lightly
+      const meta = readMeta();
+      for (const m of meta.slice(0, 5)) {
+        contextText += "\n\n" + loadTextById(m.id).slice(0, 50000);
+      }
+      console.log('Fallback context length:', contextText.length);
+    }
+
+    // Try Gemini API first
+    console.log('Attempting Gemini API call...');
+    const geminiResponse = await generateGeminiResponse(messages, contextText);
+    
+    if (geminiResponse) {
+      console.log('Gemini API response received, length:', geminiResponse.length);
+      return res.json({ content: geminiResponse });
+    }
+
+    console.log('Gemini API failed, using enhanced fallback text processing');
+    // Enhanced fallback to text processing when Gemini fails
+    const userMessage = messages[messages.length - 1].content || "";
+    const question = userMessage || req.body.query || "";
+    if (!question.trim()) {
+      return res.json({ content: "Please ask a question." });
+    }
+
+    const chunks = contextText
+      .split(/\n\s*\n/)
+      .map((c) => c.trim())
+      .filter((c) => c.length > 0);
+    const ranked = scoreChunksAgainstQuery(chunks, question);
+    const top = ranked.slice(0, 3).map((r) => r.text.slice(0, 1200));
+
+    if (top.length === 0) {
+      return res.json({
+        content: generateGeneralBCAResponse(question),
+      });
+    }
+
+    const answer = [
+      "Based on your uploaded study materials, here's what I found:",
+      ...top.map((t, i) => `${i + 1}. ${t}`),
+      "\n💡 Tip: For more accurate answers, try asking specific questions about BCA topics like 'explain pointers in C' or 'what is SQL normalization'.",
+    ].join("\n\n");
+
+    console.log('Enhanced fallback response generated, length:', answer.length);
+    return res.json({ content: answer });
+  } catch (e) {
+    console.error('Chat error:', e);
+    return res.status(500).json({ content: "Sorry, something went wrong while answering. Please try again." });
+  }
+});
+
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true });
+});
+
+// Test Gemini API endpoint
+app.get("/api/test-gemini", async (req, res) => {
+  try {
+    console.log('Testing Gemini API...');
+    const testResponse = await generateGeminiResponse([
+      { role: 'user', content: 'Hello, can you explain what is C programming in one sentence?' }
+    ]);
+    
+    if (testResponse) {
+      res.json({ 
+        success: true, 
+        response: testResponse,
+        message: 'Gemini API is working correctly'
+      });
+    } else {
+      res.json({ 
+        success: false, 
+        message: 'Gemini API failed to generate response'
+      });
+    }
+  } catch (error) {
+    console.error('Gemini test error:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message,
+      message: 'Gemini API test failed'
+    });
+  }
+});
+
+app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
+  console.log(`[api] listening on http://localhost:${PORT}`);
+  console.log(`[api] Gemini API integration enabled`);
+});
+
+

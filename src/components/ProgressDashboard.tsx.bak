@@ -1,0 +1,352 @@
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  TrendingUp,
+  Calendar,
+  Trophy,
+  Target,
+  BookOpen,
+  Brain,
+  Zap,
+  Star,
+  Code,
+  Database,
+  Globe,
+  Coffee,
+  Home,
+  Plus,
+  Minus,
+  Flame,
+  ArrowLeft,
+  Clock,
+} from "lucide-react";
+
+const ProgressDashboard = ({ onBackToDesktop }: { onBackToDesktop?: () => void }) => {
+  const overallStats = {
+    totalStudyHours: 245,
+    topicsCompleted: 127,
+    averageScore: 89,
+    studyStreak: 18,
+    weeklyGoal: 92,
+    cgpa: 8.4,
+  };
+
+  const [bcaSubjectProgress, setBcaSubjectProgress] = useState([
+    { name: "Programming in C", completed: 45, total: 50, percentage: 90, recent: "+5 this week", icon: <Code className="h-4 w-4" /> },
+    { name: "Java & OOP", completed: 38, total: 45, percentage: 84, recent: "+3 this week", icon: <Coffee className="h-4 w-4" /> },
+    { name: "Database Management", completed: 32, total: 40, percentage: 80, recent: "+4 this week", icon: <Database className="h-4 w-4" /> },
+    { name: "Web Development", completed: 28, total: 42, percentage: 67, recent: "+6 this week", icon: <Globe className="h-4 w-4" /> },
+    { name: "Data Structures", completed: 35, total: 38, percentage: 92, recent: "+2 this week", icon: <Code className="h-4 w-4" /> },
+    { name: "Computer Networks", completed: 25, total: 35, percentage: 71, recent: "+3 this week", icon: <Globe className="h-4 w-4" /> },
+  ]);
+
+  const updateSubjectProgress = (index: number, delta: number) => {
+    setBcaSubjectProgress((prev) =>
+      prev.map((s, i) => {
+        if (i !== index) return s;
+        const newCompleted = Math.max(0, Math.min(s.total, s.completed + delta));
+        return { ...s, completed: newCompleted, percentage: Math.round((newCompleted / s.total) * 100) };
+      })
+    );
+  };
+
+  const weeklyActivity = [
+    { day: "Mon", hours: 4.5, topics: 3, language: "C Programming" },
+    { day: "Tue", hours: 5.2, topics: 4, language: "Java Practice" },
+    { day: "Wed", hours: 3.8, topics: 2, language: "SQL Queries" },
+    { day: "Thu", hours: 6.1, topics: 5, language: "Web Dev Project" },
+    { day: "Fri", hours: 4.9, topics: 3, language: "Data Structures" },
+    { day: "Sat", hours: 5.6, topics: 4, language: "Algorithm Practice" },
+    { day: "Sun", hours: 3.3, topics: 2, language: "Revision" },
+  ];
+
+  const maxHours = Math.max(...weeklyActivity.map((d) => d.hours));
+
+  const bcaAchievements = [
+    { title: "C Programming Master", description: "Completed all C programming modules with 95% score", icon: "🏆", date: "2 days ago", color: "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200" },
+    { title: "Coding Streak Champion", description: "18 days of consistent programming practice", icon: "🔥", date: "Today", color: "bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 text-orange-800 dark:text-orange-200" },
+    { title: "Database Expert", description: "Mastered SQL queries and database design", icon: "⚡", date: "1 week ago", color: "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200" },
+    { title: "Java Developer", description: "Built 3 complete Java projects", icon: "☕", date: "3 days ago", color: "bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800 text-purple-800 dark:text-purple-200" },
+  ];
+
+  const recentProjects = [
+    { subject: "Web Development", project: "E-commerce Website", score: 95, date: "Today", tech: "HTML, CSS, JavaScript" },
+    { subject: "Java Programming", project: "Library Management System", score: 88, date: "Yesterday", tech: "Java, MySQL" },
+    { subject: "Database Management", project: "Student Database Design", score: 92, date: "2 days ago", tech: "SQL, ER Diagrams" },
+    { subject: "Data Structures", project: "Binary Tree Implementation", score: 87, date: "3 days ago", tech: "C Programming" },
+  ];
+
+  const semesterProgress = [
+    { semester: "1st Semester", subjects: 6, completed: 6, percentage: 100, grade: "A+" },
+    { semester: "2nd Semester", subjects: 6, completed: 6, percentage: 100, grade: "A" },
+    { semester: "3rd Semester", subjects: 7, completed: 7, percentage: 100, grade: "A+" },
+    { semester: "4th Semester", subjects: 7, completed: 5, percentage: 71, grade: "A-" },
+    { semester: "5th Semester", subjects: 8, completed: 3, percentage: 38, grade: "In Progress" },
+  ];
+
+  const statCards = [
+    { icon: Clock, value: overallStats.totalStudyHours, label: "Coding Hours", color: "text-primary", bg: "bg-primary/10" },
+    { icon: BookOpen, value: overallStats.topicsCompleted, label: "Topics Mastered", color: "text-accent", bg: "bg-accent/10" },
+    { icon: Brain, value: `${overallStats.averageScore}%`, label: "Avg Score", color: "text-success", bg: "bg-success/10" },
+    { icon: Flame, value: overallStats.studyStreak, label: "Coding Streak", color: "text-focus", bg: "bg-focus/10" },
+    { icon: Target, value: `${overallStats.weeklyGoal}%`, label: "Weekly Goal", color: "text-primary", bg: "bg-primary/10" },
+    { icon: Trophy, value: overallStats.cgpa, label: "CGPA", color: "text-accent", bg: "bg-accent/10" },
+  ];
+
+  return (
+    <div className="space-y-8 animate-fade-in">
+
+      {/* ── Page Header ── */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">BCA Progress Dashboard</h2>
+          <p className="text-muted-foreground text-sm mt-1">Track your BCA journey and programming achievements</p>
+        </div>
+        {onBackToDesktop && (
+          <Button
+            onClick={onBackToDesktop}
+            variant="outline"
+            size="sm"
+            className="gap-2 border-border/60 hover:border-primary hover:text-primary hover:bg-primary/5"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back
+          </Button>
+        )}
+      </div>
+
+      {/* ── Overall Stats ── */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        {statCards.map((stat, i) => (
+          <Card key={i} className="border-border/60 shadow-card card-hover">
+            <CardContent className="p-4 text-center">
+              <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center mx-auto mb-2`}>
+                <stat.icon className={`h-5 w-5 ${stat.color}`} />
+              </div>
+              <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{stat.label}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        {/* ── Subject Progress ── */}
+        <Card className="border-border/60 shadow-card">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <TrendingUp className="h-5 w-5 text-primary" />
+              BCA Subject Progress
+            </CardTitle>
+            <CardDescription>Click +/− to update progress in real-time</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {bcaSubjectProgress.map((subject, index) => (
+              <div key={index} className="space-y-2 p-3 rounded-xl bg-muted/40 border border-border/40">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center text-primary shrink-0">
+                      {subject.icon}
+                    </div>
+                    <span className="font-medium text-sm text-foreground truncate">{subject.name}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 ml-2 shrink-0">
+                    <Button
+                      onClick={() => updateSubjectProgress(index, -1)}
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <Minus className="h-3 w-3" />
+                    </Button>
+                    <Badge variant="secondary" className="text-xs min-w-[52px] justify-center">
+                      {subject.completed}/{subject.total}
+                    </Badge>
+                    <Button
+                      onClick={() => updateSubjectProgress(index, 1)}
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-success hover:text-success hover:bg-success/10"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-primary rounded-full transition-all duration-500"
+                    style={{ width: `${subject.percentage}%` }}
+                  />
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">{subject.percentage}% complete</span>
+                  <span className="text-success font-medium">{subject.recent}</span>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* ── Weekly Activity ── */}
+        <Card className="border-border/60 shadow-card">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Code className="h-5 w-5 text-primary" />
+              Weekly Coding Activity
+            </CardTitle>
+            <CardDescription>Your programming practice this week</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {weeklyActivity.map((day, index) => (
+                <div key={index} className="flex items-center gap-3 p-3 rounded-xl bg-muted/40 border border-border/40">
+                  <span className="font-semibold text-sm text-foreground w-8 shrink-0">{day.day}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden mb-1">
+                      <div
+                        className="h-full bg-primary rounded-full transition-all duration-500"
+                        style={{ width: `${(day.hours / maxHours) * 100}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground truncate">{day.language}</p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-sm font-semibold text-foreground">{day.hours}h</p>
+                    <p className="text-xs text-muted-foreground">{day.topics} topics</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ── Achievements ── */}
+      <Card className="border-border/60 shadow-card">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Trophy className="h-5 w-5 text-primary" />
+            BCA Achievements
+          </CardTitle>
+          <CardDescription>Your programming milestones and academic accomplishments</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {bcaAchievements.map((achievement, index) => (
+              <div
+                key={index}
+                className={`flex items-start gap-3 p-4 rounded-xl border ${achievement.color} transition-all duration-150 hover:shadow-sm`}
+              >
+                <span className="text-2xl leading-none">{achievement.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <h4 className="font-semibold text-sm">{achievement.title}</h4>
+                    <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 shrink-0 border-current/30">
+                      {achievement.date}
+                    </Badge>
+                  </div>
+                  <p className="text-xs opacity-80">{achievement.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ── Recent Projects ── */}
+      <Card className="border-border/60 shadow-card">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Code className="h-5 w-5 text-primary" />
+            Recent Projects & Assignments
+          </CardTitle>
+          <CardDescription>Your latest BCA projects and their scores</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {recentProjects.map((project, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-4 rounded-xl bg-muted/40 border border-border/40 hover:border-primary/30 transition-all duration-150"
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm text-foreground">{project.project}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{project.subject}</p>
+                  <p className="text-xs text-primary mt-0.5">{project.tech}</p>
+                </div>
+                <div className="text-right shrink-0 ml-4">
+                  <p className={`text-xl font-bold ${project.score >= 90 ? "text-success" : "text-primary"}`}>
+                    {project.score}%
+                  </p>
+                  <p className="text-xs text-muted-foreground">{project.date}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ── Semester Progress ── */}
+      <Card className="border-border/60 shadow-card">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <BookOpen className="h-5 w-5 text-primary" />
+            BCA Semester Progress
+          </CardTitle>
+          <CardDescription>Your academic journey across all semesters</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {semesterProgress.map((sem, index) => (
+              <div key={index} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <span className="font-medium text-sm text-foreground">{sem.semester}</span>
+                    <Badge
+                      variant={sem.percentage === 100 ? "default" : "secondary"}
+                      className={`text-xs ${sem.percentage === 100 ? "bg-success text-white" : ""}`}
+                    >
+                      {sem.grade}
+                    </Badge>
+                  </div>
+                  <Badge variant="outline" className="text-xs border-border/60">
+                    {sem.completed}/{sem.subjects} subjects
+                  </Badge>
+                </div>
+                <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-700 ${sem.percentage === 100 ? "bg-success" : "bg-primary"}`}
+                    style={{ width: `${sem.percentage}%` }}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">{sem.percentage}% complete</p>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ── Motivational Banner ── */}
+      <Card className="border-primary/20 bg-gradient-to-br from-primary/5 via-secondary/10 to-primary/5 shadow-card">
+        <CardContent className="p-8 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-primary/15 flex items-center justify-center mx-auto mb-4">
+            <Star className="h-7 w-7 text-primary" />
+          </div>
+          <h3 className="text-xl font-bold text-foreground mb-2">You're coding like a pro! 🌟</h3>
+          <p className="text-muted-foreground text-sm max-w-md mx-auto mb-1">
+            You've maintained a{" "}
+            <span className="font-bold text-primary">{overallStats.studyStreak}-day</span> coding streak and mastered{" "}
+            <span className="font-bold text-primary">{overallStats.topicsCompleted}</span> BCA topics!
+          </p>
+          <p className="text-xs text-muted-foreground mt-3">
+            💾 All progress is saved to your device automatically
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default ProgressDashboard;
