@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 import { fileURLToPath } from "url";
 // pdf-parse's package entry executes a test file on import in some environments.
 // To avoid that, require the implementation file directly using createRequire.
@@ -24,21 +24,18 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.API_PORT ? Number(process.env.API_PORT) : 8787;
 
-// Gemini API configuration
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+// Groq API configuration (llama-3.3-70b-versatile)
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
-let genAI = null;
-let model = null;
+let groq = null;
 
-if (!GEMINI_API_KEY) {
-  console.warn("⚠️ Gemini API key is not set. AI endpoints will return a fallback message.");
-  console.warn("Set GEMINI_API_KEY to enable AI features: https://aistudio.google.com/app/apikey");
+if (!GROQ_API_KEY) {
+  console.warn("⚠️ Groq API key is not set. AI endpoints will return a fallback message.");
+  console.warn("Set GROQ_API_KEY in .env to enable AI features: https://console.groq.com");
 } else {
-  genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-  model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
-  console.log("🔑 Gemini API Key:", GEMINI_API_KEY.substring(0, 10) + "...");
-  console.log("🤖 Gemini Model: gemini-2.0-flash initialized");
+  groq = new Groq({ apiKey: GROQ_API_KEY });
+  console.log("🔑 Groq API Key:", GROQ_API_KEY.substring(0, 12) + "...");
+  console.log("🤖 Groq Model: llama-3.3-70b-versatile initialized");
 }
 
 app.use(cors());
@@ -214,37 +211,37 @@ function generateDatabaseExplanation() {
   return `🗄️ **Database Management Systems**\n\nA **database** is an organized collection of structured information stored electronically.\n\n**📊 Key Concepts:**\n\n**Relational Databases:**\n• Data stored in tables (rows and columns)\n• Primary keys for unique identification\n• Foreign keys for relationships\n• ACID properties (Atomicity, Consistency, Isolation, Durability)\n\n**SQL Basics:**\n\`\`\`sql\n-- Create table\nCREATE TABLE students (\n    id INT PRIMARY KEY,\n    name VARCHAR(50),\n    grade DECIMAL(3,2)\n);\n\n-- Insert data\nINSERT INTO students VALUES (1, 'John Doe', 85.5);\n\n-- Query data\nSELECT * FROM students WHERE grade > 80;\n\n-- Update data\nUPDATE students SET grade = 90 WHERE id = 1;\n\`\`\`\n\n**🔄 Normalization:**\n• **1NF:** Eliminate duplicate columns\n• **2NF:** Remove partial dependencies\n• **3NF:** Remove transitive dependencies\n• Reduces redundancy and anomalies\n\n**🎯 Real-world Applications:**\n• Student management systems\n• E-commerce platforms\n• Banking systems\n• Social media platforms\n\n**❓ Practice Questions:**\n1. What's the difference between INNER and LEFT JOIN?\n2. How do you design a many-to-many relationship?\n3. What are database indexes and why use them?\n\nWhich database concept needs clarification?`;
 }
 
-// Enhanced Gemini API function with all improvements
-async function generateGeminiResponse(messages, contextText = "") {
+// Groq API function using llama-3.3-70b-versatile
+async function generateGroqResponse(messages, contextText = "") {
   try {
-    if (!model) return null;
-    console.log('🤖 Generating enhanced Gemini response with:', {
+    if (!groq) return null;
+    console.log('🤖 Generating Groq response with:', {
       messagesCount: messages.length,
       contextLength: contextText.length,
       lastMessage: messages[messages.length - 1]?.content
     });
 
     const userMessage = messages[messages.length - 1]?.content || "Hello";
-    
+
     // Create smart context based on query relevance
     const smartContext = createSmartContext(contextText, userMessage, 6000);
-    
-    // Format conversation history for context
+
+    // Format conversation history
     const conversationHistory = messages.length > 1 ? formatConversationHistory(messages) : '';
-    
-    // Enhanced system prompt with comprehensive BCA knowledge
-    const enhancedPrompt = `You are Study Spark, an expert BCA (Bachelor of Computer Applications) tutor with deep knowledge in:
 
-🎓 **CORE SUBJECTS:**
-• **C/C++ Programming:** pointers, arrays, data structures, algorithms, memory management
-• **Java & OOP:** inheritance, polymorphism, encapsulation, abstraction, design patterns
-• **Database Management:** SQL queries, normalization, ACID properties, indexing, transactions
-• **Web Development:** HTML5, CSS3, JavaScript, React, Node.js, REST APIs
-• **Computer Networks:** OSI model, TCP/IP, HTTP/HTTPS, routing, security protocols
-• **Data Structures:** arrays, linked lists, stacks, queues, trees, graphs, hash tables
-• **Algorithms:** sorting, searching, recursion, dynamic programming, complexity analysis
+    // Build system prompt
+    const systemPrompt = `You are Study Spark, an expert BCA (Bachelor of Computer Applications) tutor with deep knowledge in:
 
-📚 **TEACHING METHODOLOGY:**
+🎓 CORE SUBJECTS:
+• C/C++ Programming: pointers, arrays, data structures, algorithms, memory management
+• Java & OOP: inheritance, polymorphism, encapsulation, abstraction, design patterns
+• Database Management: SQL queries, normalization, ACID properties, indexing, transactions
+• Web Development: HTML5, CSS3, JavaScript, React, Node.js, REST APIs
+• Computer Networks: OSI model, TCP/IP, HTTP/HTTPS, routing, security protocols
+• Data Structures: arrays, linked lists, stacks, queues, trees, graphs, hash tables
+• Algorithms: sorting, searching, recursion, dynamic programming, complexity analysis
+
+TEACHING METHODOLOGY:
 • Always explain concepts step-by-step with clear examples
 • Provide practical coding examples with proper syntax
 • Use analogies and real-world applications
@@ -253,71 +250,60 @@ async function generateGeminiResponse(messages, contextText = "") {
 • Be encouraging and build confidence
 • Use emojis strategically for engagement
 
-${conversationHistory ? `📝 **CONVERSATION CONTEXT:**\n${conversationHistory}\n\n` : ''}${smartContext ? `📖 **RELEVANT STUDY MATERIALS:**\n${smartContext}\n\n` : ''}🎯 **CURRENT QUESTION:** ${userMessage}
+${smartContext ? `RELEVANT STUDY MATERIALS:\n${smartContext}\n\n` : ''}`;
 
-Provide a comprehensive, educational response that helps the student master this BCA concept:`;
+    // Build messages array for Groq chat completion
+    const groqMessages = [
+      { role: "system", content: systemPrompt },
+    ];
 
-    console.log('📤 Making enhanced Gemini API request...');
-    console.log('📏 Enhanced prompt length:', enhancedPrompt.length);
+    // Add conversation history
+    if (conversationHistory) {
+      // Add prior messages from history
+      for (const msg of messages.slice(0, -1)) {
+        groqMessages.push({
+          role: msg.role === "user" ? "user" : "assistant",
+          content: msg.content,
+        });
+      }
+    }
 
-    // Generate content with improved configuration
-    const result = await model.generateContent({
-      contents: [{
-        role: "user",
-        parts: [{ text: enhancedPrompt }]
-      }],
-      generationConfig: {
-        temperature: 0.7,
-        topK: 40,
-        topP: 0.95,
-        maxOutputTokens: 2048, // Increased for detailed responses
-      },
-      safetySettings: [
-        {
-          category: "HARM_CATEGORY_HARASSMENT",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE"
-        },
-        {
-          category: "HARM_CATEGORY_HATE_SPEECH",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE"
-        },
-        {
-          category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE"
-        },
-        {
-          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE"
-        }
-      ]
+    // Add current user message
+    groqMessages.push({ role: "user", content: userMessage });
+
+    console.log('📤 Making Groq API request...');
+
+    const chatCompletion = await groq.chat.completions.create({
+      messages: groqMessages,
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.7,
+      max_completion_tokens: 2048,
+      top_p: 0.95,
     });
 
-    const response = await result.response;
-    const responseText = response.text();
-    
-    console.log('✅ Enhanced Gemini response received, length:', responseText.length);
-    
+    const responseText = chatCompletion.choices[0]?.message?.content || "";
+
+    console.log('✅ Groq response received, length:', responseText.length);
+
     // Validate and improve response quality
     const validatedResponse = validateResponse(responseText, userMessage);
-    
+
     if (!validatedResponse) {
       console.log('⚠️ Response validation failed, using structured fallback');
       return generateStructuredResponse(userMessage);
     }
-    
+
     return validatedResponse;
-    
+
   } catch (error) {
-    console.error('❌ Enhanced Gemini error:', error.message);
-    
-    if (error.message.includes('API_KEY_INVALID')) {
-      console.error('🔑 Please check your GEMINI_API_KEY in .env file');
-      return null;
-    } else if (error.message.includes('QUOTA_EXCEEDED')) {
-      console.error('📊 API quota exceeded');
-      return null;
+    console.error('❌ Groq API error:', error.message);
+
+    if (error.status === 401) {
+      console.error('🔑 Invalid GROQ_API_KEY — check your .env file');
+    } else if (error.status === 429) {
+      console.error('📊 Rate limit reached — wait a moment and try again');
     }
-    
+
     console.error('Full error:', error);
     return null;
   }
@@ -899,59 +885,49 @@ app.post("/api/chat", async (req, res) => {
       console.log('Fallback context length:', contextText.length);
     }
 
-    if (!model) {
+    if (!groq) {
       return res.json({
         content:
-          "⚠️ AI is not configured on the server (missing GEMINI_API_KEY).\n\nYou can still use uploads/subjects, but chat requires configuring the API key.",
+          "⚠️ AI is not configured on the server (missing GROQ_API_KEY).\n\nSet GROQ_API_KEY in .env to enable chat. Get a free key at https://console.groq.com",
       });
     }
 
-    // Try Gemini API first
-    console.log('Attempting Gemini API call...');
-    const geminiResponse = await generateGeminiResponse(messages, contextText);
+    // Call Groq API
+    console.log('Attempting Groq API call...');
+    const groqResponse = await generateGroqResponse(messages, contextText);
 
-    if (geminiResponse) {
-      console.log('Gemini API response received, length:', geminiResponse.length);
-      return res.json({ content: geminiResponse });
+    if (groqResponse) {
+      console.log('Groq API response received, length:', groqResponse.length);
+      return res.json({ content: groqResponse });
     }
 
-    console.log('Gemini API failed, trying simple Gemini call without context');
-    // If context-based Gemini fails, try a simple direct Gemini call
+    console.log('Groq API failed, trying simple call without context');
+    // Fallback: simple call without file context
     try {
       const userMessage = messages[messages.length - 1]?.content || "Hello";
-      const simplePrompt = `You are Study Spark, an expert BCA tutor. Answer this question clearly and helpfully: ${userMessage}`;
-      
-      console.log('Making simple Gemini API call with prompt:', simplePrompt.substring(0, 100) + '...');
-      
-      const simpleResult = await model.generateContent({
-        contents: [{
-          role: "user",
-          parts: [{ text: simplePrompt }]
-        }],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 2048,
-        }
+
+      const simpleFallback = await groq.chat.completions.create({
+        messages: [
+          { role: "system", content: "You are Study Spark, an expert BCA tutor. Answer clearly and helpfully with examples." },
+          { role: "user", content: userMessage },
+        ],
+        model: "llama-3.3-70b-versatile",
+        temperature: 0.7,
+        max_completion_tokens: 2048,
       });
-      
-      console.log('Got Gemini response object');
-      const simpleResponse = await simpleResult.response;
-      console.log('Response object:', simpleResponse);
-      const simpleText = simpleResponse.text();
-      console.log('Response text:', simpleText.substring(0, 100));
-      
+
+      const simpleText = simpleFallback.choices[0]?.message?.content || "";
       if (simpleText && simpleText.length > 20) {
-        console.log('Simple Gemini response received, length:', simpleText.length);
+        console.log('Simple Groq response received, length:', simpleText.length);
         return res.json({ content: simpleText });
       }
     } catch (simpleError) {
-      console.error('Simple Gemini call also failed:', simpleError.message);
-      console.error('Full error:', simpleError);
+      console.error('Simple Groq call also failed:', simpleError.message);
     }
 
-    console.log('All Gemini attempts failed, returning error message');
-    return res.json({ 
-      content: "❌ I'm having trouble connecting to the AI service right now. Please check:\n1. Your internet connection\n2. The server is running\n3. Try again in a moment\n\nThe chatbot will work once the connection is restored!" 
+    console.log('All Groq attempts failed, returning error message');
+    return res.json({
+      content: "❌ I'm having trouble connecting to the AI service right now. Please check:\n1. Your internet connection\n2. The server is running\n3. Try again in a moment\n\nThe chatbot will work once the connection is restored!"
     });
   } catch (e) {
     console.error('Chat error:', e);
@@ -963,17 +939,17 @@ app.get("/api/health", (req, res) => {
   res.json({ ok: true });
 });
 
-// Test Gemini API endpoint
-app.get("/api/test-gemini", async (req, res) => {
+// Test Groq API endpoint
+app.get("/api/test-groq", async (req, res) => {
   try {
-    console.log('Testing Gemini API...');
-    if (!model) {
+    console.log('Testing Groq API...');
+    if (!groq) {
       return res.json({
         success: false,
-        message: 'GEMINI_API_KEY is not set. Configure it to enable Gemini API.',
+        message: 'GROQ_API_KEY is not set. Get a free key at https://console.groq.com',
       });
     }
-    const testResponse = await generateGeminiResponse([
+    const testResponse = await generateGroqResponse([
       { role: 'user', content: 'Hello, can you explain what is C programming in one sentence?' }
     ]);
 
@@ -981,23 +957,26 @@ app.get("/api/test-gemini", async (req, res) => {
       res.json({
         success: true,
         response: testResponse,
-        message: 'Gemini API is working correctly'
+        message: 'Groq API (llama-3.3-70b) is working correctly'
       });
     } else {
       res.json({
         success: false,
-        message: 'Gemini API failed to generate response'
+        message: 'Groq API failed to generate response'
       });
     }
   } catch (error) {
-    console.error('Gemini test error:', error);
+    console.error('Groq test error:', error);
     res.status(500).json({
       success: false,
       error: error.message,
-      message: 'Gemini API test failed'
+      message: 'Groq API test failed'
     });
   }
 });
+
+// Keep old endpoint as alias
+app.get("/api/test-gemini", (req, res) => res.redirect("/api/test-groq"));
 
 // ── Register Coding Lab routes ────────────────────────────────────────────
 registerExecuteRoute(app);
@@ -1006,6 +985,6 @@ registerSubmissionsRoute(app);
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`[api] listening on http://localhost:${PORT}`);
-  console.log(`[api] Gemini API integration enabled`);
+  console.log(`[api] Groq API (llama-3.3-70b-versatile) integration enabled`);
   console.log(`[api] Coding Lab routes registered: /api/execute, /api/submissions`);
 });

@@ -1,0 +1,456 @@
+
+
+602- E-Commerce & Cyber Security 
+Page 1 
+ 
+ 
+Unit 4: Concept of Cyber Security 
+4.1 Cyber Security 
+Definition: 
+Cybersecurity refers to the practice of protecting internet-connected systems like 
+computers, servers, mobile devices, electronic systems, networks, and data from 
+Harmful attacks. 
+ It consists of two words: 
+1. Cyber: Refers to technology, including systems, networks, programs, and 
+data. 
+2. Security: Involves the protection of these systems, networks, applications, 
+and information. 
+4.1.1 Types of Cyber Threats 
+A cyber threat is any Harmful activity by an individual or group that aims to steal 
+data, gain unauthorized access to a network, or disturb digital systems. 
+ 
+ 
+
+602- E-Commerce & Cyber Security 
+Page 2 
+ 
+ 
+1. Malware (Harmful Software) 
+ What is it? 
+ Malware  is  any  harmful  software  created  to  damage,  disturb,  or  steal 
+information from the user's computer or network. 
+ How does it work? 
+ Malware can infect the user's system when files are downloaded, malicious 
+websites are visited, or infected devices are plugged in. 
+ Examples of Malware: 
+o Virus:  Attaches  to  files  and  spreads  when  the  user  opens  them. 
+Example: A Word file with a virus that corrupts other files. 
+o Worms:  Spread  automatically  across  networks  without  user  action. 
+Example: A worm slowing down internet speed by copying itself repeatedly. 
+o Trojan  horse:  Pretends  to  be  a  useful  program  but  harms  the  system. 
+Example: A game app that secretly steals the user's personal data. 
+o Ransomware:  Locks  the  user's  data  and  asks  for  payment. 
+Example: Hackers encrypt files and demand money to unlock them. 
+2. Phishing 
+ What is it? 
+ Phishing tricks the user into sharing sensitive information like passwords or 
+bank details. 
+ How does it work? 
+ Attackers  send  fake  emails  or  messages  pretending  to  be  from  trusted 
+sources like banks or companies. 
+ Example:  
+An email is received saying the user's bank account will be blocked unless a 
+link is clicked and logged into. When this is done, attackers steal login details. 
+ 
+
+602- E-Commerce & Cyber Security 
+Page 3 
+ 
+ 
+3. Man-in-the-Middle (MITM) Attack 
+ What is it? 
+ An attacker secretly listens to or alters communication between two people 
+or systems. 
+ How does it work? 
+ The attacker places themselves between the sender and receiver, pretending 
+to be part of the communication. 
+ Example: 
+While using public Wi-Fi at a coffee shop, an attacker intercepts messages and 
+steals the user's login credentials while accessing their bank account. 
+4. Distributed Denial of Service (DDoS) Attack 
+ What is it? 
+ A DDoS attack overloads a website or system with so much traffic that it 
+crashes and becomes unavailable. 
+ How does it work? 
+ Hackers use multiple devices or servers to send fake requests, overwhelming 
+the target system. 
+ Example: 
+A popular online store gets so much fake traffic during a sale that real 
+customers cannot access it. 
+5. Brute Force Attack 
+ What is it? 
+ A  method  where  attackers  guess  passwords  by  trying  every  possible 
+combination. 
+ How does it work? 
+ Automated tools are used to test millions of password combinations quickly. 
+
+602- E-Commerce & Cyber Security 
+Page 4 
+ 
+ 
+ Example: 
+A  hacker  uses  a  program  to  guess  a  weak  password  like  “12345”  or 
+“password123.” 
+6. SQL Injection (SQLI) 
+ What is it? 
+ An attack that targets databases by inserting harmful code into them. 
+ How does it work? 
+ Hackers find weaknesses in a website’s code to steal or manipulate data 
+stored in its database. 
+ Example: 
+A hacker enters malicious code into a login form, gaining access to all user 
+accounts and details stored on the site. 
+7. Domain Name System (DNS) Attack 
+ What is it? 
+ An attack on the DNS, which works like the internet’s phonebook, to redirect 
+users to fake websites or disrupt services. 
+ How does it work? 
+ Hackers modify DNS records so users trying to visit a authentic website are 
+redirected to a fake one. 
+ Example: 
+The user types "amazon.com," but due to a DNS attack, they are sent to a 
+fake website that looks like Amazon and steals credit card details. 
+4.1.2 Advantages of Cybersecurity 
+Cybersecurity focuses on protecting systems, networks, and programs from digital 
+attacks, which often aim to: 
+ Access or steal sensitive information. 
+
+602- E-Commerce & Cyber Security 
+Page 5 
+ 
+ 
+ Blackmail users for money. 
+ Interrupt normal processes. 
+Advantages of Cybersecurity: 
+1. Protects businesses from cyberattacks and data breaches 
+o Prevents financial losses and reputational damage. 
+2. Secures data and networks 
+o Ensures that sensitive data is protected from theft or manipulation. 
+3. Prevents unauthorized access 
+o Blocks  hackers  or  malicious  actors  from  gaining  control  of  systems  or 
+accounts. 
+4. Allows quicker recovery after an attack 
+o Reduces downtime and ensures faster recovery of services. 
+5. Protects end-user devices like computers and mobile phones 
+o Safeguards devices against malware, phishing, and other threats. 
+6. Ensures internet safety by monitoring incoming and outgoing data 
+o Identifies and stops suspicious activity to maintain secure browsing. 
+7. Supports business continuity 
+o Keeps systems running smoothly during attacks, reducing disturbances. 
+8. Builds trust among developers, stakeholders, and consumers 
+o Display a commitment to security, increasing confidence in products and 
+services. 
+9. Provides privacy and security for personal information 
+o Protects  sensitive  data  like  passwords,  financial  details,  and  personal 
+records. 
+ 
+ 
+ 
+
+602- E-Commerce & Cyber Security 
+Page 6 
+ 
+ 
+4.2 Basic Terminology 
+1. IP Address (Internet Protocol Address) 
+ What is it? 
+ An IP address is a unique number that identifies a device (like a computer, 
+phone, or printer) on a network. 
+ How does it work? 
+ It works like your home address. It tells the internet where to send data. 
+ 
+ Example:  
+o A common IP address looks like this: 192.168.1.1. (Four numbers separated by 
+periods, each ranging from 0 to 255). 
+ Uses:  
+1. Locates devices on a network.  
+ Example: Your phone’s IP address helps it connect to the Wi-Fi network. 
+2. Identifies where data needs to go.  
+ Example: When you load a website, the server knows your IP to send the 
+page. 
+ 
+ 
+
+602- E-Commerce & Cyber Security 
+Page 7 
+ 
+ 
+2. MAC Address (Media Access Control Address) 
+ What is it? 
+ A MAC address is a unique code given to your network device (like Wi-Fi or 
+Bluetooth). 
+ How does it work? 
+ It is like a device’s fingerprint, helping it be recognized on a network. 
+ 
+ Example:  
+o A MAC address looks like this: 00:1A:2B:3C:4D:5E. 
+o MM:MM:MM:SS:SS:SS (6-byte hexadecimal format). 
+ Uses:  
+1. Identifies devices on a network.  
+ Example: A router uses MAC addresses to know which devices can connect to 
+the internet. 
+2. Controls network access.  
+ Example: Schools can block unknown devices using their MAC addresses. 
+3. DNS (Domain Name System) 
+ What is it? 
+ DNS  is  like  the  internet’s  phonebook.  It  translates  website  names  into 
+numbers (IP addresses) so computers can understand them. 
+
+602- E-Commerce & Cyber Security 
+Page 8 
+ 
+ 
+ How does it work? 
+ When users type a website name (like  google.com), the DNS finds it is 
+matching IP address (like 142.250.190.14) and connects the browser to the 
+website. 
+ Example:  
+o Instead of remembering a number like 192.0.2.44, users can simply type 
+amazon.com. 
+ Uses:  
+1. Makes internet browsing easier.  
+ Example: You type facebook.com instead of its IP address. 
+2. Helps computers find websites.  
+ Example: DNS directs your browser to the right server when you search 
+online. 
+Key Differences 
+Term What it Does Example 
+IP Address   Identifies a device on a network  192.168.1.1 
+MAC Address Identifies a network device    00:1A:2B:3C:4D:5E 
+DNS Translates website names google.com 
+→ 142.250.190.14
+ 
+ 
+4.3 Types of Attacks 
+ Man-in-the-Middle (MITM) 
+ What is it? 
+A Man-in-the-Middle (MITM) attack is a cyber-attack where a hacker secretly 
+places themselves between two parties (like a user and a website) to steal or 
+change information being shared. 
+ 
+
+602- E-Commerce & Cyber Security 
+Page 9 
+ 
+ 
+ How does it work? 
+o The hacker makes both parties believe they are safely communicating with 
+each other. 
+o However, the hacker is in the middle, reading or altering the data. 
+ 
+ Example: 
+o Suppose a user tries to log in to an online bank account. Instead of connecting 
+to the bank’s real website, the user unknowingly connects to a fake website 
+created by the hacker. 
+o The fake website collects the user’s login details and passes them to the real 
+bank’s website so the user does not notice anything wrong. 
+ Why hackers use it: 
+1. To steal sensitive information like credit card numbers or passwords. 
+2. To spy on private conversations or meetings for gaining business secrets. 
+ Malware (Malicious Software) 
+ What is it? 
+Malware is any harmful software that is created to damage, steal, or gain 
+unauthorized access to a user’s computer, phone, or network without their 
+permission. 
+
+602- E-Commerce & Cyber Security 
+Page 10 
+ 
+ 
+ What does it do? 
+o Malware can steal data, damage systems, or allow hackers to control a device. 
+o It can affect computers, mobile phones, servers, and even entire networks. 
+ 
+ Types of Malware (with Examples): 
+1. Viruses 
+ What is it? 
+A virus is a harmful program that attaches itself to files or programs. When 
+the infected file is opened or shared, the virus spreads to other systems. 
+ How it works:  
+o A user opens a file containing the virus. 
+o The virus gets activated and spreads to other files or programs on the same 
+device. 
+ Example:  
+o A virus can delete important documents on the user’s computer or make the 
+computer run very slowly. 
+ 
+
+602- E-Commerce & Cyber Security 
+Page 11 
+ 
+ 
+2. Worms 
+ What is it? 
+A worm is like a virus but can spread itself without needing a host program or 
+file. Worms spread through networks and shared folders. 
+ How it works:  
+o A worm makes copies of itself and spreads to other computers. 
+o Worms slow down networks by overloading them with data. 
+ Example:  
+o A worm spreads through a company’s shared network and slows down all 
+employees' systems. 
+3. Spyware 
+ What is it? 
+Spyware is a program that secretly collects private information (like 
+passwords or browsing history) from a user’s device. 
+ How it works:  
+o It runs in the background without the user knowing and sends information to 
+the hacker. 
+ Example:  
+o A spyware program might collect a user’s credit card details while they shop 
+online and send the details to the hacker. 
+4. Trojan Horse 
+ What is it? 
+A Trojan horse is malware disguised as a useful or safe file, such as a game or 
+an image. 
+ How it works:  
+
+602- E-Commerce & Cyber Security 
+Page 12 
+ 
+ 
+o When a user downloads and opens the Trojan horse file, it secretly performs 
+harmful  actions  like  deleting files or giving hackers access  to the user’s 
+system. 
+ Example:  
+o A free game file downloaded from an untrusted website may look safe but 
+might be a Trojan horse that steals passwords. 
+5. Logic Bombs 
+ What is it? 
+A Logic Bomb is a harmful program that remains inactive until triggered by an 
+event, such as a specific date or time. 
+ How it works:  
+o Once triggered, it performs harmful tasks like deleting data or damaging 
+hardware. 
+ Example:  
+o A Logic Bomb may be programmed to delete all company data on a specific 
+date, causing major disruption. 
+6. Ransomware 
+ What is it? 
+Ransomware locks or encrypts the user’s computer or files, making them 
+unusable until the user pays money (a ransom) to the hacker. 
+ How it works:  
+o The hacker encrypts the data with a secret key. 
+o The user is asked to pay the hacker to get the key and recover the data. 
+ Example:  
+o A company’s files are encrypted by ransomware, and the hacker demands 
+payment to unlock them. 
+
+602- E-Commerce & Cyber Security 
+Page 13 
+ 
+ 
+ 7. Keyloggers 
+ What is it? 
+A Keylogger records everything the user types on their keyboard and sends 
+the information to the hacker. 
+ How it works:  
+o The Keylogger tracks usernames, passwords, and other sensitive information 
+typed by the user. 
+ Example:  
+o A hacker installs a Keylogger on a public computer to collect users' email 
+passwords. 
+ DDoS (Distributed Denial of Service) 
+ What is a DDoS Attack? 
+ A DDoS attack happens when many computers send too much traffic to one 
+system, like a website, causing it to stop working. 
+ Hackers using viruses like Trojans usually control the attacking computers. 
+ How does it work? 
+ Hackers send so many requests to the system that it cannot handle them all. 
+ This overload makes the system slow or crash, so it cannot serve real users. 
+ Example: 
+ Think of a shopping mall with too many people rushing in at once. The doors 
+are blocked, and no one can go inside. 
+ Goal of a DDoS Attack: 
+ The main goal is to block the target system from working properly by 
+exhausting its resources. 
+ These attacks often target websites or servers to make them unavailable. 
+
+602- E-Commerce & Cyber Security 
+Page 14 
+ 
+ 
+ Hackers 
+ Who are Hackers? 
+ Hackers are skilled computer experts who can enter systems by bypassing 
+security. 
+ Some hackers are bad (Black Hat), and some are good (White Hat). 
+ Types of Hackers 
+ 
+1. Black Hat Hackers (Bad Hackers) 
+ Who are they? 
+o Black hat hackers are criminals who break into systems to steal data, 
+cause damage, or earn money illegally. 
+ What do they do? 
+o Plant viruses like Trojans and ransomware. 
+o Steal sensitive information like passwords or bank details. 
+o Attack websites and servers (e.g., DDoS attacks). 
+ Example: 
+o A black hat hacker may hack into a bank's system to steal money or 
+customer information. 
+
+602- E-Commerce & Cyber Security 
+Page 15 
+ 
+ 
+2. White Hat Hackers (Good Hackers) 
+ Who are they? 
+o White hat hackers are ethical hackers who help companies protect 
+their systems from attacks. 
+o They follow rules and work for organizations or governments. 
+ What do they do? 
+o Find and fix weak points in systems. 
+o Test systems to ensure they are safe from cyberattacks. 
+o Protect personal and business data. 
+ Example: 
+o A white hat hacker may be hired by a company to test its security and 
+prevent cybercriminals from attacking. 
+3. Gray Hat Hackers 
+ Gray hat hackers are in between black hat and white hat hackers. 
+ They do not hack for bad reasons (like black hats) but also do not always 
+follow rules (like white hats). 
+ What do they do? 
+ They may find security weaknesses in a system without permission and then 
+inform the owner. 
+ Sometimes, they ask for money to fix the issue they found. 
+ Key Points: 
+ They do not harm systems like black hats. 
+ They do not follow ethical guidelines like white hats. 
+ Their goal is usually to show off skills or help improve security. 
+ 
+
+602- E-Commerce & Cyber Security 
+Page 16 
+ 
+ 
+ Example: 
+ A gray hat hacker finds a security issue in a company's website without 
+permission and informs the company. 
+ They might say, "I found this problem; if you pay me, I can fix it for you." 
+ The company did not ask for their help, so their actions are not legal, but they 
+do not harm the system intentionally. 
+ Difference between Black, White, and Gray Hat Hackers 
+Type of 
+Hacker 
+Follows 
+Rules? 
+Purpose Example Action 
+Black Hat No 
+Harm systems, steal 
+data, or earn money 
+illegally. 
+Hacks a bank to steal money. 
+White 
+Hat 
+Yes 
+Protect systems and find 
+weaknesses ethically. 
+Tests a company’s security 
+with permission. 
+Gray Hat  Sometimes 
+Improve security but 
+without permission. 
+Finds a website issue without 
+asking, and then informs the 
+owner. 
+ 
