@@ -386,7 +386,7 @@ export default function StudyPlanner({ onBackToDesktop }: Props) {
         {/* ══════ OVERVIEW ══════ */}
         {tab === "overview" && (
           <div className="space-y-5">
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
               <StatCard icon={Clock} label="Total Study" value={fmtMin(stats.totalMinutes)} sub={`${stats.completedSessions} sessions`} gradient="bg-gradient-to-br from-blue-500 to-cyan-500" delay={0} />
               <StatCard icon={Flame} label="Streak" value={`${stats.currentStreak}d`} sub="consecutive" gradient="bg-gradient-to-br from-amber-500 to-orange-500" delay={0.05} />
               <StatCard icon={Target} label="Goals" value={`${stats.completedGoals}/${stats.totalGoals}`} sub={`${stats.avgGoalProgress}% avg`} gradient="bg-gradient-to-br from-violet-500 to-purple-600" delay={0.1} />
@@ -394,7 +394,7 @@ export default function StudyPlanner({ onBackToDesktop }: Props) {
               <StatCard icon={Zap} label="Today" value={fmtMin(stats.todayMinutes)} sub={`${stats.todaySessions} sessions`} gradient="bg-gradient-to-br from-rose-500 to-pink-500" delay={0.2} />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <FocusTimer />
               <Card className="border-border/30 bg-card/70 backdrop-blur-sm">
                 <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><BarChart3 className="h-4 w-4 text-violet-400" /> This Week</CardTitle></CardHeader>

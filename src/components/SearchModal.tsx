@@ -280,9 +280,13 @@ export default function SearchModal({ open, onClose, onNavigate }: SearchModalPr
                     <X className="h-4 w-4 text-muted-foreground" />
                   </button>
                 )}
-                <kbd className="hidden sm:inline-flex h-5 items-center gap-0.5 rounded border border-border/60 bg-muted/60 px-1.5 text-[10px] font-mono text-muted-foreground select-none">
-                  ESC
-                </kbd>
+                <button
+                  onClick={onClose}
+                  className="p-1.5 rounded-lg hover:bg-muted transition-colors shrink-0"
+                  aria-label="Close search"
+                >
+                  <X className="h-4 w-4 text-muted-foreground" />
+                </button>
               </div>
 
               {/* ── Filter Tabs ──────────────────────────────────────── */}

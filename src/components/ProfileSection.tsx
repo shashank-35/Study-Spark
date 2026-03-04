@@ -271,7 +271,7 @@ const ProfileSection = ({ user, isAdmin = false, onBackToDesktop, onUpdateProfil
             <div className="flex-1 text-center md:text-left space-y-1.5">
               <h1 className="text-2xl font-bold text-foreground">{user.name}</h1>
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 text-sm text-muted-foreground">
-                <span className="flex items-center gap-1"><Mail className="h-3.5 w-3.5" />{user.email}</span>
+                <span className="flex items-center gap-1 truncate max-w-[200px] sm:max-w-none"><Mail className="h-3.5 w-3.5 shrink-0" />{user.email}</span>
                 <span className="hidden md:inline text-border">·</span>
                 <span className="flex items-center gap-1"><GraduationCap className="h-3.5 w-3.5" />BCA · Sem {user.semester}</span>
               </div>
@@ -313,13 +313,13 @@ const ProfileSection = ({ user, isAdmin = false, onBackToDesktop, onUpdateProfil
         <motion.h2 variants={fadeUp} className="text-lg font-semibold text-foreground">Academic Summary</motion.h2>
 
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
             {Array.from({ length: 5 }).map((_, i) => (
               <Card key={i} className="border-border/50"><CardContent className="p-5 space-y-2"><Skeleton className="h-6 w-14" /><Skeleton className="h-3 w-20" /></CardContent></Card>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
             {/* Progress ring – spans first card on mobile */}
             <motion.div variants={fadeUp} custom={0}>
               <Card className="border-border/50 hover:shadow-sm transition-shadow h-full">
@@ -361,7 +361,7 @@ const ProfileSection = ({ user, isAdmin = false, onBackToDesktop, onUpdateProfil
         <motion.div variants={fadeUp} className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground">Subject Progress</h2>
           {semesters.length > 1 && (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-thin">
               <Button
                 size="sm"
                 variant={semFilter === "all" ? "default" : "ghost"}

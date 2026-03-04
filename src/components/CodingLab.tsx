@@ -272,7 +272,7 @@ Please give me a useful hint that guides me in the right direction without givin
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-violet-500" />
-        <span className="ml-3 text-gray-500">Loading Coding Lab…</span>
+        <span className="ml-3 text-muted-foreground">Loading Coding Lab…</span>
       </div>
     );
   }
@@ -282,9 +282,9 @@ Please give me a useful hint that guides me in the right direction without givin
 
   // ── Render ────────────────────────────────────────────────────────────
   return (
-    <div className="w-full min-h-screen bg-gray-50">
+    <div className="w-full min-h-screen bg-background">
       {/* ── Header ────────────────────────────────────────────────── */}
-      <div className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-6 py-5">
+      <div className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-4 sm:px-6 py-4 sm:py-5">
         <div className="max-w-screen-xl mx-auto flex items-center justify-between flex-wrap gap-3">
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -317,7 +317,7 @@ Please give me a useful hint that guides me in the right direction without givin
       </div>
 
       {/* ── 3-column layout ───────────────────────────────────────── */}
-      <div className="max-w-screen-xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-[260px_1fr_300px] gap-4 min-h-[calc(100vh-120px)]">
+      <div className="max-w-screen-xl mx-auto p-3 sm:p-4 grid grid-cols-1 md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr_300px] gap-4 min-h-[calc(100vh-120px)]">
 
         {/* ── Left: Problem list ─────────────────────────────────── */}
         <div className="lg:min-h-0">
@@ -337,7 +337,7 @@ Please give me a useful hint that guides me in the right direction without givin
               {/* Problem title + difficulty */}
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-lg font-bold text-gray-900">{selectedProblem.title}</h2>
+                  <h2 className="text-lg font-bold text-foreground">{selectedProblem.title}</h2>
                   <Badge
                     className={`text-[11px] border ${
                       selectedProblem.difficulty === "easy"
@@ -361,7 +361,7 @@ Please give me a useful hint that guides me in the right direction without givin
                     <Badge
                       key={tag}
                       variant="outline"
-                      className="text-[11px] text-gray-500 border-gray-300"
+                      className="text-[11px] text-muted-foreground border-border"
                     >
                       {tag}
                     </Badge>
@@ -371,7 +371,7 @@ Please give me a useful hint that guides me in the right direction without givin
 
               {/* Tabs: Description | Output | AI Hint */}
               <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="bg-gray-100 rounded-lg h-8">
+                <TabsList className="bg-muted rounded-lg h-8">
                   <TabsTrigger value="description" className="text-xs h-6">
                     Description
                   </TabsTrigger>
@@ -385,24 +385,24 @@ Please give me a useful hint that guides me in the right direction without givin
 
                 {/* Description */}
                 <TabsContent value="description">
-                  <Card className="shadow-sm border-gray-200">
+                    <Card className="shadow-sm border-border">
                     <CardContent className="pt-4 space-y-4">
-                      <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                      <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">
                         {selectedProblem.description}
                       </p>
 
                       {selectedProblem.test_cases.length > 0 && (
                         <div>
-                          <h4 className="text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">
+                          <h4 className="text-xs font-semibold text-foreground/80 mb-2 uppercase tracking-wide">
                             Test Cases
                           </h4>
                           <div className="space-y-1.5">
                             {selectedProblem.test_cases.map((tc, i) => (
-                              <div key={tc.id} className="p-2 bg-gray-50 rounded border border-gray-200 text-xs font-mono">
-                                <span className="text-gray-500">#{i + 1} Input: </span>
-                                <span className="text-gray-800">{tc.input}</span>
-                                <span className="text-gray-500 ml-2">→ Expected: </span>
-                                <span className="text-gray-800">{tc.expected_output}</span>
+                              <div key={tc.id} className="p-2 bg-muted rounded border border-border text-xs font-mono">
+                                <span className="text-muted-foreground">#{i + 1} Input: </span>
+                                <span className="text-foreground">{tc.input}</span>
+                                <span className="text-muted-foreground ml-2">→ Expected: </span>
+                                <span className="text-foreground">{tc.expected_output}</span>
                               </div>
                             ))}
                           </div>
@@ -414,10 +414,10 @@ Please give me a useful hint that guides me in the right direction without givin
 
                 {/* Output */}
                 <TabsContent value="output">
-                  <Card className="shadow-sm border-gray-200">
+                  <Card className="shadow-sm border-border">
                     <CardContent className="pt-4">
                       {running || submitting ? (
-                        <div className="flex items-center gap-2 text-gray-500 py-4">
+                        <div className="flex items-center gap-2 text-muted-foreground py-4">
                           <Loader2 className="h-4 w-4 animate-spin" />
                           <span className="text-sm">
                             {submitting ? "Submitting…" : "Running…"}
@@ -444,7 +444,7 @@ Please give me a useful hint that guides me in the right direction without givin
                           {/* stdout */}
                           {output.output && (
                             <div>
-                              <p className="text-xs text-gray-500 mb-1 font-medium">stdout</p>
+                              <p className="text-xs text-muted-foreground mb-1 font-medium">stdout</p>
                               <pre className="p-3 bg-gray-900 text-green-400 rounded-lg font-mono text-xs overflow-x-auto max-h-48 whitespace-pre-wrap">
                                 {output.output}
                               </pre>
@@ -454,7 +454,7 @@ Please give me a useful hint that guides me in the right direction without givin
                           {/* stderr / error */}
                           {output.error && (
                             <div>
-                              <p className="text-xs text-gray-500 mb-1 font-medium">stderr</p>
+                              <p className="text-xs text-muted-foreground mb-1 font-medium">stderr</p>
                               <pre className="p-3 bg-gray-900 text-red-400 rounded-lg font-mono text-xs overflow-x-auto max-h-48 whitespace-pre-wrap">
                                 {output.error}
                               </pre>
@@ -462,7 +462,7 @@ Please give me a useful hint that guides me in the right direction without givin
                           )}
                         </div>
                       ) : (
-                        <p className="text-sm text-gray-400 py-4">
+                        <p className="text-sm text-muted-foreground py-4">
                           Run or Submit your code to see output here.
                         </p>
                       )}
@@ -472,7 +472,7 @@ Please give me a useful hint that guides me in the right direction without givin
 
                 {/* AI Hint */}
                 <TabsContent value="hint">
-                  <Card className="shadow-sm border-gray-200">
+                  <Card className="shadow-sm border-border">
                     <CardContent className="pt-4 space-y-3">
                       <Button
                         size="sm"
@@ -490,13 +490,13 @@ Please give me a useful hint that guides me in the right direction without givin
                       </Button>
 
                       {aiHint && (
-                        <div className="prose prose-sm max-w-none text-gray-700 bg-violet-50 rounded-lg p-3 border border-violet-100 text-sm whitespace-pre-wrap leading-relaxed">
+                        <div className="prose prose-sm max-w-none text-foreground/80 bg-violet-50 dark:bg-violet-950/30 rounded-lg p-3 border border-violet-100 dark:border-violet-800 text-sm whitespace-pre-wrap leading-relaxed">
                           {aiHint}
                         </div>
                       )}
 
                       {!aiHint && !hintLoading && (
-                        <p className="text-sm text-gray-400">
+                        <p className="text-sm text-muted-foreground">
                           Click "Get AI Hint" to get a contextual hint from Gemini without seeing the full solution.
                         </p>
                       )}
@@ -515,9 +515,9 @@ Please give me a useful hint that guides me in the right direction without givin
               />
 
               {/* ── Custom Stdin ─────────────────────────────────────── */}
-              <Card className="shadow-sm border-gray-200">
+              <Card className="shadow-sm border-border">
                 <CardHeader className="py-2 px-4">
-                  <CardTitle className="text-xs text-gray-600 font-medium">
+                  <CardTitle className="text-xs text-muted-foreground font-medium">
                     Custom Input (stdin)
                   </CardTitle>
                 </CardHeader>
@@ -527,7 +527,7 @@ Please give me a useful hint that guides me in the right direction without givin
                     onChange={(e) => setStdin(e.target.value)}
                     rows={2}
                     placeholder="Optional: provide stdin for your program"
-                    className="w-full text-sm font-mono p-2 border border-gray-200 rounded resize-y bg-gray-50 focus:outline-none focus:ring-2 focus:ring-violet-300"
+                    className="w-full text-sm font-mono p-2 border border-border rounded resize-y bg-muted focus:outline-none focus:ring-2 focus:ring-violet-300 text-foreground"
                   />
                 </CardContent>
               </Card>
@@ -562,7 +562,7 @@ Please give me a useful hint that guides me in the right direction without givin
             </>
           ) : (
             <div className="flex items-center justify-center min-h-[400px]">
-              <div className="text-center text-gray-400">
+              <div className="text-center text-muted-foreground">
                 <Code2 className="h-12 w-12 mx-auto mb-3 opacity-50" />
                 <p className="text-lg font-medium">Select a problem to start</p>
                 <p className="text-sm mt-1">Choose from the list on the left</p>

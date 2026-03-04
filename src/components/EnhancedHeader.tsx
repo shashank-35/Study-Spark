@@ -21,6 +21,12 @@ import {
   Menu,
   X,
   MessageCircle,
+  BookOpen,
+  Brain,
+  Code,
+  Calendar,
+  TrendingUp,
+  Briefcase,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useUser } from "@clerk/clerk-react";
@@ -39,9 +45,10 @@ interface EnhancedHeaderProps {
   onSearchNavigate?: (category: SearchCategory, id: string) => void;
   onViewNotifications?: () => void;
   onNotificationNavigate?: (link: string) => void;
+  onNavigate?: (view: string) => void;
 }
 
-const EnhancedHeader = ({ user, onLogout, onBackToDesktop, onProfileClick, onSearchNavigate, onViewNotifications, onNotificationNavigate }: EnhancedHeaderProps) => {
+const EnhancedHeader = ({ user, onLogout, onBackToDesktop, onProfileClick, onSearchNavigate, onViewNotifications, onNotificationNavigate, onNavigate }: EnhancedHeaderProps) => {
   const { user: clerkUser } = useUser();
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -263,6 +270,28 @@ const EnhancedHeader = ({ user, onLogout, onBackToDesktop, onProfileClick, onSea
             {mobileMenuOpen && (
               <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="md:hidden overflow-hidden border-t border-border/40">
                 <div className="py-2 space-y-0.5">
+                  <Button variant="ghost" size="sm" onClick={() => { onNavigate?.("dashboard"); setMobileMenuOpen(false); }} className="w-full justify-start gap-2 text-muted-foreground h-9">
+                    <BookOpen className="h-4 w-4" /> Dashboard
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => { onNavigate?.("subjects"); setMobileMenuOpen(false); }} className="w-full justify-start gap-2 text-muted-foreground h-9">
+                    <BookOpen className="h-4 w-4" /> Subjects
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => { onNavigate?.("quiz"); setMobileMenuOpen(false); }} className="w-full justify-start gap-2 text-muted-foreground h-9">
+                    <Brain className="h-4 w-4" /> Quiz
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => { onNavigate?.("coding"); setMobileMenuOpen(false); }} className="w-full justify-start gap-2 text-muted-foreground h-9">
+                    <Code className="h-4 w-4" /> Coding Lab
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => { onNavigate?.("planner"); setMobileMenuOpen(false); }} className="w-full justify-start gap-2 text-muted-foreground h-9">
+                    <Calendar className="h-4 w-4" /> Study Planner
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => { onNavigate?.("progress"); setMobileMenuOpen(false); }} className="w-full justify-start gap-2 text-muted-foreground h-9">
+                    <TrendingUp className="h-4 w-4" /> Analytics
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => { onNavigate?.("career"); setMobileMenuOpen(false); }} className="w-full justify-start gap-2 text-muted-foreground h-9">
+                    <Briefcase className="h-4 w-4" /> Careers
+                  </Button>
+                  <div className="border-t border-border/40 my-1" />
                   <Button variant="ghost" size="sm" onClick={() => { setIsChatbotOpen(true); setMobileMenuOpen(false); }} className="w-full justify-start gap-2 text-muted-foreground h-9">
                     <MessageCircle className="h-4 w-4" /> AI Assistant
                   </Button>

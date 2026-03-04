@@ -149,10 +149,10 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  h1 { @apply text-3xl font-bold tracking-tight; }
-  h2 { @apply text-2xl font-semibold tracking-tight; }
-  h3 { @apply text-lg font-medium; }
-  h4 { @apply text-base font-medium; }
+  h1 { @apply text-2xl sm:text-3xl font-bold tracking-tight; }
+  h2 { @apply text-xl sm:text-2xl font-semibold tracking-tight; }
+  h3 { @apply text-base sm:text-lg font-medium; }
+  h4 { @apply text-sm sm:text-base font-medium; }
 
   /* Visible focus ring for accessibility */
   :focus-visible {
@@ -445,5 +445,23 @@
   }
   .ring-track {
     stroke: hsl(var(--muted));
+  }
+}
+
+/* ── Mobile performance: reduce decorative elements ────────────── */
+@media (max-width: 639px) {
+  .hero-blob { opacity: 0.25; }
+  .hero-blob--blue   { width: 200px; height: 200px; }
+  .hero-blob--purple { width: 180px; height: 180px; }
+  .hero-blob--cyan   { width: 120px; height: 120px; }
+  .landing-orb { opacity: 0.3; }
+  .landing-orb--purple { width: 150px; height: 150px; }
+  .landing-orb--blue   { width: 180px; height: 180px; }
+  .landing-orb--orange { width: 100px; height: 100px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-blob, .landing-orb, .cta-particle {
+    animation: none !important;
   }
 }

@@ -260,7 +260,7 @@ const IndexInner = ({
       <Section>
         <motion.div
           variants={fadeUp}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/90 via-primary to-primary/80 dark:from-primary/80 dark:to-primary/60 p-8 md:p-10"
+          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/90 via-primary to-primary/80 dark:from-primary/80 dark:to-primary/60 p-5 sm:p-8 md:p-10"
         >
           {/* Background glow */}
           <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-white/10 blur-3xl pointer-events-none" />
@@ -294,9 +294,9 @@ const IndexInner = ({
             </div>
 
             {/* Progress ring */}
-            <div className="flex items-center gap-5 bg-white/10 backdrop-blur-sm rounded-xl px-6 py-5 border border-white/15 shrink-0">
-              <div className="relative w-20 h-20">
-                <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
+            <div className="flex items-center gap-5 bg-white/10 backdrop-blur-sm rounded-xl px-4 sm:px-6 py-4 sm:py-5 border border-white/15 shrink-0">
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20">
+                <svg className="w-16 h-16 sm:w-20 sm:h-20 -rotate-90" viewBox="0 0 80 80">
                   <circle cx="40" cy="40" r="34" fill="none" strokeWidth="5" stroke="white" className="opacity-20" />
                   <circle
                     cx="40" cy="40" r="34" fill="none" strokeWidth="5" stroke="white" strokeLinecap="round"
@@ -409,7 +409,7 @@ const IndexInner = ({
                     key={subject.id}
                     variants={fadeUp}
                     custom={i}
-                    className="min-w-[270px] shrink-0 snap-start"
+                    className="min-w-[240px] sm:min-w-[270px] shrink-0 snap-start"
                   >
                     <Card className="border-border/50 h-full hover:shadow-sm hover:border-primary/20 transition-all duration-200 cursor-pointer" onClick={() => setCurrentView("subjects")}>
                       <CardContent className="p-5 space-y-3">
@@ -581,6 +581,7 @@ const IndexInner = ({
         onProfileClick={() => setCurrentView("profile")}
         onSearchNavigate={handleSearchNavigate}
         onViewNotifications={() => setCurrentView("notifications")}
+        onNavigate={(view) => setCurrentView(view)}
         onNotificationNavigate={(link) => {
           // Map notification links to views
           if (link.startsWith("/subjects")) setCurrentView("subjects");
@@ -590,7 +591,7 @@ const IndexInner = ({
         }}
       />
 
-      <main className="flex-1 container mx-auto px-4 lg:px-6 py-8">
+      <main className="flex-1 container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-8">
         {currentView === "dashboard" && renderDashboard()}
         {currentView === "subjects" && <SubjectSelector onBackToDesktop={() => setCurrentView("dashboard")} />}
         {currentView === "coding" && <CodingLab onBackToDesktop={() => setCurrentView("dashboard")} />}

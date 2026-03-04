@@ -243,10 +243,12 @@ const StudySparkChatbot = ({ isOpen, onClose }: StudySparkChatbotProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 animate-slide-up">
+    <div className="fixed inset-x-0 bottom-0 sm:inset-x-auto sm:bottom-4 sm:right-4 z-50 animate-slide-up">
       <div
-        className={`transition-all duration-300 rounded-2xl border border-border/60 bg-card shadow-card-hover overflow-hidden flex flex-col ${
-          isMinimized ? "w-80 h-16" : "w-96 h-[600px]"
+        className={`transition-all duration-300 rounded-t-2xl sm:rounded-2xl border border-border/60 bg-card shadow-card-hover overflow-hidden flex flex-col ${
+          isMinimized
+            ? "w-full sm:w-80 h-16"
+            : "w-full sm:w-96 h-[calc(100dvh-env(safe-area-inset-top))] sm:h-[600px]"
         }`}
       >
         {/* ── Header ── */}

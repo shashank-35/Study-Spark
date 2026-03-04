@@ -395,7 +395,7 @@ export default function QuizPlayer({ subjectId, subjectName, onBack, onBackToDes
                 </div>
               )}
 
-              <div className="flex justify-center gap-3 pt-2">
+              <div className="flex flex-wrap justify-center gap-3 pt-2">
                 <Button onClick={restartQuiz} className="gap-1.5 bg-gradient-to-r from-primary to-blue-600 text-white">
                   <RefreshCw className="h-4 w-4" /> Try Again
                 </Button>
@@ -479,7 +479,7 @@ export default function QuizPlayer({ subjectId, subjectName, onBack, onBackToDes
               Question {currentIdx + 1} of {questions.length}
             </Badge>
             <div className="flex items-center gap-3">
-              <span className="text-xs text-muted-foreground">{selectedQuiz.title}</span>
+              <span className="text-xs text-muted-foreground truncate max-w-[120px] sm:max-w-none">{selectedQuiz.title}</span>
               <div className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${
                 isTimeLow
                   ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 animate-pulse'
