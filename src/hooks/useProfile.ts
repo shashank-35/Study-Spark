@@ -1,83 +1,83 @@
 /**
  * useProfile.ts
- * Central hook for the profile page — fetches all profile data from Supabase,
- * provides loading / error states, and subscribes to real-time changes.
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Central hook for the profile page — backed by React Query.
+ *
+ * Uses the SAME React Query cache as the dashboard (via shared query keys),
+ * so stats/subjects/achievements are never out of sync.
  */
 
-import { useEffect, useState, useCallback } from 'react';
 import {
-  fetchProfile,
-  fetchAcademicStats,
-  fetchSubjectProgress,
-  fetchProfileActivity,
-  fetchProfileAchievements,
-  subscribeProfile,
-} from '@/lib/profileService';
-import type {
-  ProfileRow,
-  AcademicStats,
-  SubjectProgress,
-  ProfileActivity,
-  ProfileAchievement,
-} from '@/lib/profileService';
+  useDashboardStats,
+  useSubjects,
+  useUserProgress,
+  useAchievements,
+  useActivityFeed,
+  useProfileRow,
+  DEFAULT_STATS,
+  type ProfileRow,
+  type SubjectRow,
+  type DashboardStats,
+  type Achievement,
+  type ActivityItem,
+  type StudentProgress,
+} from '@/hooks/queries';
+
+export interface SubjectProgressItem {
+  subject_id: string;
+  subject_name: string;
+  semester: number;
+  progress_percent: number;
+  status: 'Not Started' | 'In Progress' | 'Completed';
+  last_accessed_at: string | null;
+}
 
 export interface ProfileData {
   profile: ProfileRow | null;
-  stats: AcademicStats;
-  subjects: SubjectProgress[];
-  activity: ProfileActivity[];
-  achievements: ProfileAchievement[];
+  stats: DashboardStats;
+  subjects: SubjectProgressItem[];
+  activity: ActivityItem[];
+  achievements: Achievement[];
 }
 
-const DEFAULT_STATS: AcademicStats = {
-  totalSubjects: 0,
-  completedSubjects: 0,
-  overallProgress: 0,
-  currentStreak: 0,
-  totalStudyMinutes: 0,
-  quizzesCompleted: 0,
-  avgQuizScore: 0,
-};
-
 export function useProfile(userId: string | undefined) {
-  const [data, setData] = useState<ProfileData>({
-    profile: null,
-    stats: DEFAULT_STATS,
-    subjects: [],
-    activity: [],
-    achievements: [],
+  const { data: profile, isLoading: profileLoading } = useProfileRow(userId);
+  const { data: stats = DEFAULT_STATS, isLoading: statsLoading } = useDashboardStats(userId);
+  const { data: subjectRows = [], isLoading: subjectsLoading } = useSubjects();
+  const { data: progressMap = {}, isLoading: progressLoading } = useUserProgress(userId);
+  const { data: activity = [], isLoading: activityLoading } = useActivityFeed(userId);
+  const { data: achievements = [], isLoading: achievementsLoading } = useAchievements(userId);
+
+  // Transform subjects + progress into SubjectProgressItem[]
+  const subjects: SubjectProgressItem[] = subjectRows.map((s: SubjectRow) => {
+    const pct = (progressMap as Record<string, StudentProgress>)[s.id]?.progress_percent ?? 0;
+    return {
+      subject_id: s.id,
+      subject_name: s.name,
+      semester: s.semester,
+      progress_percent: pct,
+      status: pct >= 100 ? 'Completed' : pct > 0 ? 'In Progress' : 'Not Started',
+      last_accessed_at: (progressMap as Record<string, StudentProgress>)[s.id]?.last_accessed_at ?? null,
+    };
   });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    if (!userId) return;
-    try {
-      const [profile, stats, subjects, activity, achievements] = await Promise.all([
-        fetchProfile(userId),
-        fetchAcademicStats(userId),
-        fetchSubjectProgress(userId),
-        fetchProfileActivity(userId),
-        fetchProfileAchievements(userId),
-      ]);
-      setData({ profile, stats, subjects, activity, achievements });
-      setError(null);
-    } catch (e: any) {
-      console.error('useProfile load error:', e);
-      setError(e.message ?? 'Failed to load profile');
-    } finally {
-      setLoading(false);
-    }
-  }, [userId]);
+  const loading = profileLoading || statsLoading || subjectsLoading
+    || progressLoading || activityLoading || achievementsLoading;
 
-  useEffect(() => { load(); }, [load]);
-
-  // Real-time subscription
-  useEffect(() => {
-    if (!userId) return;
-    const unsub = subscribeProfile(userId, () => { load(); });
-    return unsub;
-  }, [userId, load]);
-
-  return { ...data, loading, error, refetch: load };
+  return {
+    profile: profile ?? null,
+    stats,
+    subjects,
+    activity,
+    achievements: achievements.map((a: Achievement) => ({
+      id: a.id,
+      title: a.title,
+      description: a.description,
+      icon: a.icon,
+      earned_at: a.earned_at,
+    })),
+    loading,
+    error: null as string | null,
+    refetch: () => {}, // React Query handles refetch automatically
+  };
 }

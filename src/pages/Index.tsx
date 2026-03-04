@@ -38,6 +38,7 @@ import NotificationPage from "@/pages/NotificationPage";
 import { seedStudentFromClerkUser } from "@/lib/storage";
 import { ProgressProvider, useProgress } from "@/hooks/useProgressContext";
 import { createWelcomeNotification } from "@/lib/notificationService";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import type { SubjectRow } from "@/lib/subjectService";
 import type { SearchCategory } from "@/lib/searchService";
 
@@ -145,10 +146,12 @@ const Index = () => {
 
   return (
     <ProgressProvider userId={user.id}>
-      <IndexInner
-        user={user}
-        signOut={signOut}
-      />
+      <ErrorBoundary>
+        <IndexInner
+          user={user}
+          signOut={signOut}
+        />
+      </ErrorBoundary>
     </ProgressProvider>
   );
 };
@@ -219,7 +222,9 @@ const IndexInner = ({
     }
   }, [user]);
 
-  const isAdmin = userData.email === "kanadeshashank35@gmail.com";
+  const isAdmin =
+    user?.publicMetadata?.role === "admin" ||
+    userData.email === "kanadeshashank35@gmail.com";
 
   /* ── Get status for a subject ── */
   const getStatus = (s: SubjectRow) => {

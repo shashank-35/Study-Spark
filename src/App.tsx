@@ -17,7 +17,17 @@ const Index = lazy(() => import("./pages/Index"));
 const AdminPage = lazy(() => import("./pages/AdminPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 2 * 60 * 1000,      // 2 min — data considered fresh
+      gcTime: 10 * 60 * 1000,         // 10 min — keep in cache after unmount
+      retry: 2,                        // 2 retries on failure
+      refetchOnWindowFocus: true,      // fresh data when user tabs back
+      refetchOnReconnect: true,        // fresh data after re-connect
+    },
+  },
+});
 
 /* ── Full-screen loader ───────────────────────────────────────────────── */
 function PageLoader() {

@@ -21,8 +21,9 @@
  *   - Execution time display
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useCallback, useRef, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
+import { supabase } from "@/lib/supabaseClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -97,22 +98,32 @@ export default function CodingLab({ onBackToDesktop }: CodingLabProps) {
   const submissionListKey = useRef(0);
 
   // ── Fetch problems on mount ───────────────────────────────────────────
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await getProblems();
-        setProblems(data);
-        if (data.length > 0) {
-          selectProblem(data[0], "javascript");
-        }
-      } catch (err) {
-        console.error("CodingLab: failed to load problems:", err);
-      } finally {
-        setLoadingProblems(false);
+  const loadProblems = useCallback(async () => {
+    try {
+      const data = await getProblems();
+      setProblems(data);
+      if (data.length > 0 && !selectedProblem) {
+        selectProblem(data[0], "javascript");
       }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    } catch (err) {
+      console.error("CodingLab: failed to load problems:", err);
+    } finally {
+      setLoadingProblems(false);
+    }
   }, []);
+
+  useEffect(() => { loadProblems(); }, [loadProblems]);
+
+  // Realtime: refresh problems when admin modifies them
+  useEffect(() => {
+    const channel = supabase
+      .channel('coding_problems_realtime_lab')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'coding_problems' }, () => {
+        loadProblems();
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [loadProblems]);
 
   // ── Select a problem & load its code ─────────────────────────────────
   const selectProblem = (problem: CodingProblem, lang: Language = language) => {

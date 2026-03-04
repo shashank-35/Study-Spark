@@ -219,11 +219,17 @@ export default function SubjectMaterials({ subjectId, subjectName }: SubjectMate
   // ── Realtime subscription ───────────────────────────────────────────────────
 
   useEffect(() => {
-    const unsubscribe = subscribeToMaterialChanges(subjectId, (updatedMaterials) => {
+    const unsubscribe = subscribeToMaterialChanges(subjectId, async (updatedMaterials) => {
       setAllMaterials(updatedMaterials);
-      // Re-group from flat list
-      const newGroups = groupMaterialsByUnit(updatedMaterials);
-      setGroups(newGroups);
+      // Re-fetch grouped data from DB to preserve unit order_no
+      try {
+        const freshGroups = await fetchMaterialsGroupedByUnit(subjectId);
+        setGroups(freshGroups);
+      } catch {
+        // Fallback to client-side grouping if DB fetch fails
+        const newGroups = groupMaterialsByUnit(updatedMaterials);
+        setGroups(newGroups);
+      }
     });
 
     return unsubscribe;

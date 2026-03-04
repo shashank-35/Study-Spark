@@ -70,26 +70,37 @@ export default function QuizPlayer({ subjectId, subjectName, onBack, onBackToDes
   const savedRef = useRef(false);
 
   // ─── Load quizzes for this subject ────────────────────────────────
-  useEffect(() => {
-    (async () => {
-      try {
-        const { data, error } = await supabase
-          .from('quizzes')
-          .select('*')
-          .eq('subject_id', subjectId)
-          .eq('is_active', true)
-          .order('created_at', { ascending: false });
+  const loadSubjectQuizzes = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('quizzes')
+        .select('*')
+        .eq('subject_id', subjectId)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
 
-        if (error) throw error;
-        setQuizzes(data ?? []);
-      } catch (e) {
-        console.error('Failed to load quizzes:', e);
-        setQuizzes([]);
-      } finally {
-        setLoading(false);
-      }
-    })();
+      if (error) throw error;
+      setQuizzes(data ?? []);
+    } catch (e) {
+      console.error('Failed to load quizzes:', e);
+      setQuizzes([]);
+    } finally {
+      setLoading(false);
+    }
   }, [subjectId]);
+
+  useEffect(() => { loadSubjectQuizzes(); }, [loadSubjectQuizzes]);
+
+  // Realtime: refresh quizzes when admin changes them
+  useEffect(() => {
+    const channel = supabase
+      .channel(`quiz_player_realtime_${subjectId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'quizzes' }, () => {
+        loadSubjectQuizzes();
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [subjectId, loadSubjectQuizzes]);
 
   // ─── Load questions for selected quiz ─────────────────────────────
   const loadQuestions = useCallback(async (quiz: Quiz) => {

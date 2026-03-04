@@ -5,13 +5,17 @@ import { Badge } from './ui/badge';
 
 type Subject = {
   id: number;
-  subject_name: string;
+  name?: string;
+  subject_name?: string;
   description: string;
-  progress: number;
-  completion: number;
-  next_topic: string;
-  est_time: string;
-  level: string;
+  progress?: number;
+  completion?: number;
+  next_topic?: string;
+  est_time?: string;
+  level?: string;
+  difficulty?: string;
+  semester?: number;
+  credits?: number;
 };
 
 export default function SubjectList() {
@@ -43,7 +47,7 @@ export default function SubjectList() {
       const { data, error } = await supabase
         .from('subjects')
         .select('*')
-        .order('subject_name');
+        .order('id', { ascending: true });
       
       if (error) throw error;
       setSubjects(data || []);
@@ -67,13 +71,13 @@ export default function SubjectList() {
           <Card key={subject.id} className="hover:shadow-lg transition-shadow">
             <CardHeader>
               <div className="flex items-start justify-between">
-                <CardTitle className="text-lg">{subject.subject_name}</CardTitle>
+                <CardTitle className="text-lg">{subject.name ?? subject.subject_name ?? 'Untitled'}</CardTitle>
                 <Badge variant={
-                  subject.level === 'Beginner' ? 'default' :
-                  subject.level === 'Intermediate' ? 'secondary' :
+                  (subject.difficulty ?? subject.level) === 'Beginner' ? 'default' :
+                  (subject.difficulty ?? subject.level) === 'Intermediate' ? 'secondary' :
                   'destructive'
                 }>
-                  {subject.level}
+                  {subject.difficulty ?? subject.level ?? 'Beginner'}
                 </Badge>
               </div>
             </CardHeader>
@@ -89,8 +93,8 @@ export default function SubjectList() {
                   />
                 </div>
                 <div className="flex justify-between text-sm text-gray-600">
-                  <span>{subject.completion}% Complete</span>
-                  <span>{subject.progress} Topics Done</span>
+                  <span>{subject.completion ?? 0}% Complete</span>
+                  <span>{subject.progress ?? 0} Topics Done</span>
                 </div>
               </div>
 

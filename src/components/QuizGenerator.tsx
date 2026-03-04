@@ -118,6 +118,17 @@ const QuizGenerator = ({ onBackToDesktop }: { onBackToDesktop?: () => void }) =>
 
   useEffect(() => { loadQuizzes(); }, [loadQuizzes]);
 
+  // Realtime: refresh quiz list when quizzes are added/updated/deleted
+  useEffect(() => {
+    const channel = supabase
+      .channel('quiz_generator_quizzes_realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'quizzes' }, () => {
+        loadQuizzes();
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [loadQuizzes]);
+
   /* ── Load questions for a DB quiz ── */
   const loadQuestions = useCallback(async (quizId: number) => {
     setLoadingQuestions(true);

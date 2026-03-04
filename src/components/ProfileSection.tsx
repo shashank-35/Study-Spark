@@ -47,8 +47,8 @@ import { useTheme } from "next-themes";
 import { motion, useInView } from "framer-motion";
 import { toast } from "sonner";
 import { useProfile } from "@/hooks/useProfile";
+import type { SubjectProgressItem as SubjectProgressType } from "@/hooks/useProfile";
 import { upsertProfile } from "@/lib/profileService";
-import type { SubjectProgress as SubjectProgressType } from "@/lib/profileService";
 
 /* ── Animation Variants ─────────────────────────────────────────────────── */
 const fadeUp = {

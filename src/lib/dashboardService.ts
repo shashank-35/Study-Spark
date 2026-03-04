@@ -195,7 +195,7 @@ export async function fetchQuizAttempts(userId: string, limit = 20): Promise<Qui
 // ─── Realtime ─────────────────────────────────────────────────────────────────
 
 export function subscribeToDashboard(userId: string, onChange: () => void) {
-  const tables = ['student_progress', 'study_sessions', 'study_goals', 'study_todos'];
+  const tables = ['student_progress', 'study_sessions', 'study_goals', 'study_todos', 'quiz_attempts', 'quiz_results', 'achievements', 'activity_logs'];
   const channels = tables.map((table, i) =>
     supabase
       .channel(`dash_${table}_${userId}_${i}`)

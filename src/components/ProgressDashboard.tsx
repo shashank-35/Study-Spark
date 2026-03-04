@@ -1,4 +1,3 @@
-import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,17 +16,8 @@ import {
   Activity,
 } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
-import { supabase } from "@/lib/supabaseClient";
 import { useProgress } from "@/hooks/useProgressContext";
-
-/* ─── Types ──────────────────────────────────────────────────────────────── */
-
-interface WeeklyDay {
-  day: string;
-  date: string;
-  minutes: number;
-  sessions: number;
-}
+import { useWeeklyActivity } from "@/hooks/queries";
 
 /* ─────────────────────────────────────────────────────────────────────────── */
 
@@ -46,65 +36,10 @@ const ProgressDashboard = ({ onBackToDesktop }: { onBackToDesktop?: () => void }
     loading: ctxLoading,
   } = useProgress();
 
-  // Local state for view-specific data
-  const [localLoading, setLocalLoading] = useState(true);
-  const [weeklyActivity, setWeeklyActivity] = useState<WeeklyDay[]>([]);
+  // Weekly activity — from React Query (auto-invalidated by realtime hook)
+  const { data: weeklyActivity = [], isLoading: weeklyLoading } = useWeeklyActivity(userId);
 
-
-  /* ── Fetch Weekly Activity (last 7 days sessions) ── */
-  const fetchWeekly = useCallback(async (uid: string) => {
-    const days: WeeklyDay[] = [];
-    const now = new Date();
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(now);
-      d.setDate(d.getDate() - i);
-      const iso = d.toISOString().split("T")[0];
-      days.push({
-        day: d.toLocaleDateString("en-US", { weekday: "short" }),
-        date: iso,
-        minutes: 0,
-        sessions: 0,
-      });
-    }
-    try {
-      const weekAgo = days[0].date;
-      const { data } = await supabase
-        .from("study_sessions")
-        .select("date, duration, actual_duration")
-        .eq("user_id", uid)
-        .eq("completed", true)
-        .gte("date", weekAgo)
-        .order("date", { ascending: true });
-
-      (data ?? []).forEach((s: any) => {
-        const entry = days.find((d) => d.date === s.date);
-        if (entry) {
-          entry.minutes += s.actual_duration ?? s.duration ?? 0;
-          entry.sessions += 1;
-        }
-      });
-    } catch { /* ignore */ }
-    return days;
-  }, []);
-
-
-
-  /* ── Load Local Data (weekly activity only — subject progress comes from context) ── */
-  const loadLocal = useCallback(async () => {
-    if (!userId) return;
-    try {
-      const weekly = await fetchWeekly(userId);
-      setWeeklyActivity(weekly);
-    } catch (e) {
-      console.error("ProgressDashboard load error:", e);
-    } finally {
-      setLocalLoading(false);
-    }
-  }, [userId, fetchWeekly]);
-
-  useEffect(() => { loadLocal(); }, [loadLocal]);
-
-  const loading = ctxLoading || localLoading;
+  const loading = ctxLoading || weeklyLoading;
 
   /* ── Helpers ── */
   const maxMinutes = Math.max(...weeklyActivity.map((d) => d.minutes), 1);
