@@ -1,0 +1,442 @@
+
+
+602- E-Commerce & Cyber Security 
+Page 1 
+ 
+ 
+U
+U
+n
+n
+i
+i
+t
+t 
+1
+1: 
+I
+I
+n
+n
+t
+t
+r
+r
+o
+o
+d
+d
+u
+u
+c
+c
+t
+t
+i
+i
+o
+o
+n
+n 
+t
+t
+o
+o 
+E
+E
+l
+l
+e
+e
+c
+c
+t
+t
+r
+r
+o
+o
+n
+n
+i
+i
+c
+c
+-
+-
+C
+C
+o
+o
+m
+m
+m
+m
+e
+e
+r
+r
+c
+c
+e
+e 
+(
+(
+E
+E
+-
+-
+c
+c
+o
+o
+m
+m
+m
+m
+e
+e
+r
+r
+c
+c
+e
+e
+)
+) 
+ 1.1 E-Commerce (EC) overview 
+ Definition: E-commerce means buying and  selling products or services using the 
+Internet or other computer networks. 
+ Purpose: E-commerce helps businesses, sellers, and customers save money, get better 
+quality products and services, and get things faster. 
+ Paperless Information Sharing: E-commerce uses different ways to share business 
+information without paper, like: 
+ EDI (Electronic Data Exchange) 
+ Email 
+ Online Bulletin Boards 
+ EFT (Electronic Fund Transfer) 
+ Other Network-based Methods 
+
+602- E-Commerce & Cyber Security 
+Page 2 
+ 
+ 
+ EDI (Electronic Data Exchange): A way for businesses to send documents like 
+orders or invoices electronically. 
+Example: A store sends a purchase order to a supplier using EDI instead of a paper 
+form. 
+ Email: Sending and receiving business information through electronic mail. 
+Example: A company sends an invoice or update to a customer via email. 
+ Online Bulletin Boards: Websites where businesses post important information 
+or updates. 
+Example: A company shares news about a new product launch on its online bulletin 
+board. 
+ EFT (Electronic Fund Transfer): Transferring money between bank accounts 
+electronically. 
+Example: A customer pays for an online purchase using a bank transfer or digital 
+wallet. 
+ Other Network-based Methods: Using various online tools and technologies to 
+share business information. 
+Example: Using chat apps or specialized business platforms to send and receive 
+documents or updates. 
+ 
+ 1.2 Features/Aims of E-commerce 
+E-Commerce provides following features: 
+ Non-Cash Payment: E-commerce allows payments using credit/debit cards, 
+smart cards, and online bank transfers. 
+Example: Buying clothes online and paying with a credit card. 
+ 24x7 Service Availability: Businesses can serve customers anytime, any day. 
+Example: Shopping online at midnight or on a holiday. 
+
+602- E-Commerce & Cyber Security 
+Page 3 
+ 
+ 
+ Advertising/Marketing: E-commerce helps businesses reach more customers 
+and market products better. 
+Example: Online ads on social media or websites. 
+ Improved Sales: Orders can be placed anytime without human help, leading to 
+more sales. 
+Example: Ordering food online at any hour. 
+ Support: E-commerce offers pre-sales and post-sales support for better 
+customer service. 
+Example: Chat support for questions before buying and help after purchase. 
+ Inventory Management: E-commerce automates product inventory and 
+generates reports easily. 
+Example: Checking product stock online instantly. 
+ Communication Improvement: E-commerce enables faster and more reliable 
+communication     with     customers    and     partners. 
+Example: Quick updates via email or messaging apps.  
+ Types of e-commerce
+1) Business-to-Business [B2B] 
+2) Business-to-Consumer [B2C] 
+3) Consumer-to-Business [C2B] 
+4) Consumer-to-Consumer [C2C] 
+ 
+ 
+Business-to-Business [B2B]
+ Definition:  B2B  (Business-to-Business)  is  when  one  business  sells  products  or 
+services to another business. 
+ Types of Deals: This can include products, goods, or services. 
+ Example: Google collaborating with LG to create a mobile phone. 
+
+602- E-Commerce & Cyber Security 
+Page 4 
+ 
+ 
+ 
+ 
+Business-to-Consumer [B2C]
+ Definition:  B2C  (Business-to-Consumer)  is  when  a  business  sells  products  or 
+services directly to individual consumers or customers. 
+ Example: Shopping on websites like flipkart.com, amazon.com, or using services 
+from www.icicibank.com. 
+ 
+ 
+Consumer-to-Business [C2B]
+ Definition: C2B (Consumer-to-Business) is when a customer offers services or works 
+for a business. 
+ Example: Websites like priceline.com, where customers can offer their services or 
+set prices for products and services. 
+
+602- E-Commerce & Cyber Security 
+Page 5 
+ 
+ 
+ 
+ 
+Consumer-to-Consumer [C2C]
+ 
+Definition: C2C (Consumer-to-Consumer) is when a consumer sells products or 
+services directly to another consumer. 
+ 
+Example: Websites like olx.com and quicker.com, where people can buy and sell 
+items to each other. 
+
+602- E-Commerce & Cyber Security 
+Page 6 
+ 
+ 
+ Advantages and Limitations of E-Commerce 
+ E-commerce benefits to E-Commerce advantages can be broadly classified in three 
+major categories: 
+o Advantages to Organizations 
+o Advantages to Consumers 
+o Advantages to Society 
+ Benefits of E-Commerce for Organizations: 
+ Global  Reach:  Expands  business  to  national  and  international  markets  with  low 
+investment. 
+ Cost Savings: Reduces costs by digitizing information and processes. 
+ Better Service: Allows better interaction and service for more customers. 
+ Improved Supply Chain: Increases productivity and supports on-demand production. 
+ 24/7 Availability: Business can run all day, every day, without extra costs. 
+ Quick  Implementation:  Faster  launch  of  new  ideas  due  to  better  customer 
+communication. 
+ Better Inventory Management: Reduces costs related to managing stock. 
+ Benefits of E-Commerce for Customers: 
+ 
+24x7 Support: Customers can buy products or ask about services anytime and from 
+anywhere. 
+ 
+More Choices: E-commerce gives more options and faster delivery. 
+ 
+Lower Prices: Customers can compare prices to find cheaper deals. 
+ 
+Product Reviews: Customers can read reviews from others before buying. 
+ 
+Quick Information: Customers can get detailed product info right away. 
+ 
+No Sales Tax: In many places, buying online means no sales tax. 
+ 
+
+602- E-Commerce & Cyber Security 
+Page 7 
+ 
+ 
+ Benefits of E-Commerce for Society: 
+ Telecommuting: People do not need to travel to shop, which reduces traffic and air 
+pollution. 
+ Help for the Poor: E-commerce lowers product costs, making it easier for people in 
+rural areas to buy things. 
+ Better Living Standards: Online shopping from home can improve people's quality of 
+life. 
+ Public Services: E-commerce helps the government provide services like health care, 
+education, and social support more efficiently and at lower costs. 
+ Disadvantages/Limitations of E-Commerce: 
+1. Technical Disadvantages: 
+ Security Issues: E-commerce can have problems with safety and reliability because it 
+might not be set up well. 
+ Fast Software Changes: Software keeps changing quickly, which can be hard to keep 
+up with. 
+ Limited Internet Speed: In some countries, the internet speed is slow or not strong 
+enough. 
+2. Non-Technical Disadvantages: 
+ High Initial Cost: Building an e-commerce site can be very expensive and may take 
+longer if there are mistakes or lack of experience. 
+ Trust Issues: Customers may not trust unknown sellers and may prefer shopping in 
+physical stores. 
+ Product Quality: Online shopping does not let you touch or feel the products before 
+buying. 
+
+602- E-Commerce & Cyber Security 
+Page 8 
+ 
+ 
+ Internet Access: The internet is not cheap or easy to use for some people, especially in 
+remote areas. 
+ 
+1.3 Framework of E-Commerce 
+ Base:  E-commerce  runs  on  computers,  networks,  and  software,  creating  an 
+"information highway" (i-way). 
+ Two Main Pillars: 
+1. Applications: Tools and software for e-commerce. 
+2. Infrastructure: Systems and technology supporting these tools. 
+ 
+ Framework of E-Commerce: 
+1. Public Policy and Privacy Issues: 
+ Sets rules for businesses and customers in e-commerce. 
+2. Technical Standards: 
+ Defines formats for information (like multimedia) and network communication 
+rules. 
+
+602- E-Commerce & Cyber Security 
+Page 9 
+ 
+ 
+ Four Main Infrastructures in E-Commerce: 
+1. Business Services Infrastructure: 
+o Handles buying, selling, security, and online payments. 
+2. Messaging Infrastructure: 
+o Helps in sending and receiving information. 
+3. Multimedia and Publishing Infrastructure: 
+o Creates content using audio, video, and images. 
+4. Information Highway (I-way): 
+o Moves e-commerce data through the internet, telecom, and cable. 
+o Needed for business and customer communication. 
+ Examples: 
+ Digital Games: Combines music, video, and software. 
+ E-books: Includes text, pictures, and music. 
+ How It Works: 
+ Just like trucks transport goods, I-way uses email, or file transfers to send data. 
+ 
+1.4 Electronic Commerce Consumer Applications 
+E-commerce offers various applications for consumers, including: 
+ Entertainment: 
+o Movies on demand, online video catalogs, interactive ads, multiplayer games, and 
+online communities. 
+ Financial Services: 
+o Online banking, investment services, and financial news updates. 
+ Essential Services: 
+
+602- E-Commerce & Cyber Security 
+Page 10 
+ 
+ 
+o Online shopping, e-catalogs, telemedicine (remote medical help), and health 
+checkups. 
+ 1.5 Electronic Commerce Organization Applications: 
+E-commerce helps businesses in these ways: 
+1. Understanding Customers: 
+o Study customer behavior to attract new customers and keep existing ones. 
+2. Delivering Products: 
+o Focus on packaging, shipping, and online platforms to send products easily. 
+3. Adapting to Changes: 
+o Be flexible to switch partners, platforms, or networks anytime. 
+4. Marketing: 
+o Target Marketing: Focus on specific customer groups. 
+o Relationship Marketing: Build strong, long-term customer bonds. 
+o Virtual Inventory: No need to keep stock, sell everything online. 
+♣ E-Commerce - Business Models 
+ 
+ E-Commerce or Electronics Commerce business models can generally categorized 
+in following categories. 
+o 
+Business - to - Business (B2B) 
+o 
+Business - to - Consumer (B2C) 
+o 
+Consumer - to - Consumer (C2C) 
+o 
+Consumer - to - Business (C2B) 
+ 
+ 
+Business - to - Business (B2B)
+ Definition: B2B is when one business sells products or services to another business. 
+
+602- E-Commerce & Cyber Security 
+Page 11 
+ 
+ 
+ How it Works: A B2B website sells products to an intermediary, who then sells them to 
+the final customer. 
+ Examples of B2B Businesses: Software companies, office furniture suppliers, and 
+document hosting services. 
+ 
+ 
+Business - to - Consumer (B2C)
+ Definition: A website sells products directly to customers. 
+ How it Works: Customers browse the website, pick a product, and place an order. 
+ Order Process: The website sends a notification to the business, and the business ships 
+the product to the customer.  
+ Examples of B2C businesses are everywhere. 
+ 
+
+602- E-Commerce & Cyber Security 
+Page 12 
+ 
+ 
+ 
+Consumer - to - Consumer (C2C)  
+ Definition: A website allows consumers to sell or rent their items, like homes, cars, or 
+rooms, by posting information online. 
+ Cost: The website may charge a fee or provide the service free. 
+ How it Works: Another consumer can see the listing and decide to buy the item. 
+ Growth and Planning: C2C websites became popular with the rise of e-commerce and 
+increased trust in online shopping. They help consumers’ trade items and earn a small 
+fee for the site owner. Starting a C2C site needs careful planning. 
+ 
+ 
+ 
+Consumer - to - Business (C2B)
+ Definition: In this model, consumers use a website to compare or offer goods and 
+services to businesses. 
+ How it Works: Consumers specify how much they are willing to spend for a service or 
+product. For example, checking and comparing interest rates for personal or car loans 
+from different banks. 
+ Example: Google AdSense is an example of C2B, where consumers provide content or 
+services that businesses use for advertising. 
+
+602- E-Commerce & Cyber Security 
+Page 13 
+ 
+ 
+ 
+ 
+1.6 Mobile Commerce (M-Commerce): 
+ Definition: M-commerce refers to transactions done through mobile devices such 
+as smartphones, tablets, or wearables. 
+ Purpose: It allows consumers to buy and sell goods and services online anytime 
+and anywhere. 
+ Examples of M-Commerce Innovations: 
+ Booking tickets online 
+ Mobile banking and money transfers 
+ Contactless payments and in-app purchases 
+ Buying digital content 
+ Location-based services 
+ Mobile marketing with coupons and loyalty cards 
+ Types of Mobile Commerce Applications: 
+ Mobile Shopping: Similar to e-commerce but designed for mobile use. This 
+includes dedicated apps, mobile-optimized websites, and social media platforms 
+like Facebook or Instagram for in-app shopping. 
+
+602- E-Commerce & Cyber Security 
+Page 14 
+ 
+ 
+ Mobile Banking: Similar to online banking but may have some limitations in 
+transactions on mobile devices. Often involves dedicated apps, although some 
+financial companies use chatbots or messaging apps for customer service. 
+ Mobile Payments: Focuses on innovations in payment methods using mobile 
+devices.  Includes  options  beyond  mobile  wallets,  offering  various  ways  for 
+consumers to make payments. 
+ 

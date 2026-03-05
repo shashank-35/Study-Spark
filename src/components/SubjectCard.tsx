@@ -122,13 +122,13 @@ const SubjectCard = memo(function SubjectCard({
       whileTap={{ scale: 0.99 }}
       className="h-full"
     >
-      <Card className="h-full flex flex-col border border-border/60 shadow-sm hover:shadow-lg transition-all duration-300 dark:bg-card">
+      <div className="glass-card h-full flex flex-col p-0 overflow-hidden">
         {/* ── Header ──────────────────────────────────────────────────────── */}
-        <CardHeader className="pb-3 gap-0">
+        <div className="p-5 pb-3">
           <div className="flex items-start justify-between gap-2">
             {/* Icon + name */}
             <div className="flex items-start gap-3 min-w-0">
-              <div className="mt-0.5 w-10 h-10 flex-shrink-0 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+              <div className="mt-0.5 w-11 h-11 flex-shrink-0 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center text-primary shadow-sm">
                 <GraduationCap className="h-5 w-5" />
               </div>
               <div className="min-w-0">
@@ -164,7 +164,7 @@ const SubjectCard = memo(function SubjectCard({
               {difficulty.label}
             </Badge>
             {isCompleted && (
-              <Badge variant="outline" className="text-xs font-medium bg-emerald-50 text-emerald-700 border-emerald-200">
+              <Badge variant="outline" className="text-xs font-medium bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20">
                 <Trophy className="h-3 w-3 mr-1" />
                 Completed
               </Badge>
@@ -176,17 +176,19 @@ const SubjectCard = memo(function SubjectCard({
               </Badge>
             )}
           </div>
-        </CardHeader>
+        </div>
 
         {/* ── Content ─────────────────────────────────────────────────────── */}
-        <CardContent className="flex-1 flex flex-col gap-4 pt-0">
+        <div className="flex-1 flex flex-col gap-4 px-5 pb-5">
           {/* Progress bar */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>Progress</span>
-              <span className="font-medium text-foreground">{progressValue}%</span>
+              <span className="font-semibold text-foreground">{progressValue}%</span>
             </div>
-            <Progress value={progressValue} className="h-2" />
+            <div className="progress-track">
+              <div className={`progress-fill ${isCompleted ? '!bg-gradient-to-r !from-green-500 !to-emerald-500' : ''}`} style={{ width: `${Math.min(progressValue, 100)}%` }} />
+            </div>
           </div>
 
           {/* Stats row */}
@@ -227,11 +229,10 @@ const SubjectCard = memo(function SubjectCard({
           {/* ── Action buttons ──────────────────────────────────────────── */}
           <div className="space-y-2.5">
             {/* Primary: Start / Continue Learning */}
-            <Button
+            <button
               onClick={onResume}
               disabled={isLoading}
-              className="w-full h-9 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 active:scale-[0.98] text-white font-semibold shadow-sm hover:shadow-md transition-all duration-200"
-              size="sm"
+              className="btn-gradient w-full h-10 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -243,7 +244,7 @@ const SubjectCard = memo(function SubjectCard({
                 : hasProgress
                   ? 'Continue Learning'
                   : 'Start Learning'}
-            </Button>
+            </button>
 
             {/* Quiz & Code row */}
             <div className="grid grid-cols-2 gap-2">
@@ -251,7 +252,7 @@ const SubjectCard = memo(function SubjectCard({
                 onClick={onLaunchQuiz}
                 variant="outline"
                 size="sm"
-                className="text-xs gap-1.5 h-8"
+                className="text-xs gap-1.5 h-8 rounded-xl border-white/40 dark:border-white/[0.08] hover:border-primary/30 hover:bg-primary/5"
                 title="Launch Quiz"
               >
                 <FileText className="h-3.5 w-3.5" />
@@ -261,7 +262,7 @@ const SubjectCard = memo(function SubjectCard({
                 onClick={onOpenCodingLab}
                 variant="outline"
                 size="sm"
-                className="text-xs gap-1.5 h-8"
+                className="text-xs gap-1.5 h-8 rounded-xl border-white/40 dark:border-white/[0.08] hover:border-primary/30 hover:bg-primary/5"
                 title="Open Coding Lab"
               >
                 <Code2 className="h-3.5 w-3.5" />
@@ -269,8 +270,8 @@ const SubjectCard = memo(function SubjectCard({
               </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </motion.div>
   );
 });

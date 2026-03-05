@@ -212,70 +212,70 @@ const CareerGuidance = ({ onBackToDesktop }: { onBackToDesktop?: () => void }) =
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Career Guidance Hub</h2>
+          <h2 className="section-title text-2xl">Career Guidance Hub</h2>
           <p className="text-muted-foreground text-sm mt-1">Explore your future career paths in IT!</p>
         </div>
         {onBackToDesktop && (
-          <Button onClick={onBackToDesktop} variant="outline" size="sm" className="gap-2">
+          <button onClick={onBackToDesktop} className="inline-flex items-center gap-2 h-9 px-3 text-sm rounded-xl bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/15 backdrop-blur-sm text-muted-foreground hover:text-foreground transition-all">
             <ArrowLeft className="h-4 w-4" /> Back
-          </Button>
+          </button>
         )}
       </div>
 
       {/* Career Stats — dynamic */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-border/60">
-          <CardContent className="p-4 text-center">
-            <Briefcase className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+        <div className="glass-card">
+          <div className="p-4 text-center">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/15 to-cyan-500/15 flex items-center justify-center mx-auto mb-2"><Briefcase className="h-6 w-6 text-blue-500" /></div>
             <p className="text-2xl font-bold text-foreground">6</p>
             <p className="text-xs text-muted-foreground">Career Paths</p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="border-border/60">
-          <CardContent className="p-4 text-center">
-            <Star className="h-8 w-8 text-violet-500 mx-auto mb-2" />
+        <div className="glass-card">
+          <div className="p-4 text-center">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500/15 to-fuchsia-500/15 flex items-center justify-center mx-auto mb-2"><Star className="h-6 w-6 text-violet-500" /></div>
             {loading ? <Skeleton className="h-8 w-16 mx-auto mb-1" /> : (
               <p className="text-2xl font-bold text-foreground tabular-nums">{avgSkillMatch}%</p>
             )}
             <p className="text-xs text-muted-foreground">Skill Match</p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="border-border/60">
-          <CardContent className="p-4 text-center">
-            <TrendingUp className="h-8 w-8 text-pink-500 mx-auto mb-2" />
+        <div className="glass-card">
+          <div className="p-4 text-center">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500/15 to-rose-500/15 flex items-center justify-center mx-auto mb-2"><TrendingUp className="h-6 w-6 text-pink-500" /></div>
             {loading ? <Skeleton className="h-8 w-16 mx-auto mb-1" /> : (
               <p className="text-2xl font-bold text-foreground tabular-nums">{quizCount}</p>
             )}
             <p className="text-xs text-muted-foreground">Quizzes Done</p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="border-border/60">
-          <CardContent className="p-4 text-center">
-            <Building className="h-8 w-8 text-green-500 mx-auto mb-2" />
+        <div className="glass-card">
+          <div className="p-4 text-center">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500/15 to-emerald-500/15 flex items-center justify-center mx-auto mb-2"><Building className="h-6 w-6 text-green-500" /></div>
             <p className="text-2xl font-bold text-foreground">{careerPaths.length * 5}+</p>
             <p className="text-xs text-muted-foreground">Companies</p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Career Paths */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {careerPaths.map((path, index) => (
-          <Card 
+          <div 
             key={index} 
-            className={`cursor-pointer border-border/60 hover:border-primary/40 hover:shadow-md transition-all ${
+            className={`glass-card cursor-pointer transition-all ${
               selectedPath === path.title ? 'ring-2 ring-primary shadow-lg' : ''
             }`}
             onClick={() => setSelectedPath(path.title)}
           >
-            <CardHeader className="pb-3">
+            <div className="p-5 pb-3">
               <div className="flex items-center space-x-3">
-                <div className="text-primary">{path.icon}</div>
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${path.color} bg-opacity-15 flex items-center justify-center text-white`}>{path.icon}</div>
                 <div>
-                  <CardTitle className="text-lg text-foreground">{path.title}</CardTitle>
+                  <h3 className="text-lg font-semibold text-foreground">{path.title}</h3>
                   <div className="flex space-x-2 mt-1">
                     <Badge className={getDemandColor(path.demandLevel)} variant="secondary">
                       {path.demandLevel} Demand
@@ -286,10 +286,10 @@ const CareerGuidance = ({ onBackToDesktop }: { onBackToDesktop?: () => void }) =
                   </div>
                 </div>
               </div>
-            </CardHeader>
+            </div>
             
-            <CardContent className="space-y-3">
-              <CardDescription>{path.description}</CardDescription>
+            <div className="px-5 pb-5 space-y-3">
+              <p className="text-sm text-muted-foreground">{path.description}</p>
               
               <div className="space-y-1.5">
                 <p className="text-sm font-semibold text-foreground">Key Skills:</p>
@@ -312,29 +312,29 @@ const CareerGuidance = ({ onBackToDesktop }: { onBackToDesktop?: () => void }) =
                 </div>
               </div>
 
-              <div className="bg-muted/40 rounded-lg p-3">
+              <div className="glass-card-subtle rounded-lg p-3">
                 <p className="text-sm font-semibold text-foreground mb-1">Career Growth:</p>
                 <p className="text-xs text-muted-foreground">{path.growthPath}</p>
               </div>
 
-              <Button className={`w-full bg-gradient-to-r ${path.color} hover:opacity-90 text-white`} size="sm">
+              <button className={`w-full btn-gradient bg-gradient-to-r ${path.color} text-sm`}>
                 <Target className="h-4 w-4 mr-1" /> Explore Path
-              </Button>
-            </CardContent>
-          </Card>
+              </button>
+            </div>
+          </div>
         ))}
       </div>
 
       {/* Skills Assessment — dynamic from Supabase */}
-      <Card className="border-border/60">
-        <CardHeader>
-          <CardTitle className="flex items-center text-foreground">
+      <div className="glass-card">
+        <div className="p-5 pb-3">
+          <h3 className="section-title text-base flex items-center">
             <Star className="h-5 w-5 mr-2" />
             Your Skill Assessment
-          </CardTitle>
-          <CardDescription>Based on your subject progress &amp; quiz results</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+          </h3>
+          <p className="text-sm text-muted-foreground mt-1">Based on your subject progress &amp; quiz results</p>
+        </div>
+        <div className="px-5 pb-5 space-y-4">
           {loading ? (
             Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="space-y-2">
@@ -358,46 +358,48 @@ const CareerGuidance = ({ onBackToDesktop }: { onBackToDesktop?: () => void }) =
                   </div>
                   <span className="text-sm text-muted-foreground tabular-nums">{skill.progress}%</span>
                 </div>
-                <Progress value={skill.progress} className="h-2" />
+                <div className="progress-track">
+                  <div className="progress-fill" style={{ width: `${skill.progress}%` }} />
+                </div>
               </div>
             ))
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Recommended Actions */}
-      <Card className="border-border/60">
-        <CardHeader>
-          <CardTitle className="flex items-center text-foreground">
+      <div className="glass-card">
+        <div className="p-5 pb-3">
+          <h3 className="section-title text-base flex items-center">
             <Target className="h-5 w-5 mr-2" />
             Recommended Next Steps
-          </CardTitle>
-          <CardDescription>Actions to boost your career readiness</CardDescription>
-        </CardHeader>
-        <CardContent>
+          </h3>
+          <p className="text-sm text-muted-foreground mt-1">Actions to boost your career readiness</p>
+        </div>
+        <div className="px-5 pb-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="flex items-start space-x-3 p-3 bg-muted/40 rounded-lg border border-border/40">
+            <div className="flex items-start space-x-3 p-3 glass-card-subtle rounded-xl">
               <Code className="h-5 w-5 text-blue-500 mt-0.5 shrink-0" />
               <div>
                 <p className="font-semibold text-sm text-foreground">Build a Portfolio</p>
                 <p className="text-xs text-muted-foreground">Create 3-5 projects showcasing your skills</p>
               </div>
             </div>
-            <div className="flex items-start space-x-3 p-3 bg-muted/40 rounded-lg border border-border/40">
+            <div className="flex items-start space-x-3 p-3 glass-card-subtle rounded-xl">
               <Users className="h-5 w-5 text-green-500 mt-0.5 shrink-0" />
               <div>
                 <p className="font-semibold text-sm text-foreground">Network & Connect</p>
                 <p className="text-xs text-muted-foreground">Join tech communities and attend events</p>
               </div>
             </div>
-            <div className="flex items-start space-x-3 p-3 bg-muted/40 rounded-lg border border-border/40">
+            <div className="flex items-start space-x-3 p-3 glass-card-subtle rounded-xl">
               <Star className="h-5 w-5 text-violet-500 mt-0.5 shrink-0" />
               <div>
                 <p className="font-semibold text-sm text-foreground">Get Certified</p>
                 <p className="text-xs text-muted-foreground">Pursue relevant industry certifications</p>
               </div>
             </div>
-            <div className="flex items-start space-x-3 p-3 bg-muted/40 rounded-lg border border-border/40">
+            <div className="flex items-start space-x-3 p-3 glass-card-subtle rounded-xl">
               <Briefcase className="h-5 w-5 text-orange-500 mt-0.5 shrink-0" />
               <div>
                 <p className="font-semibold text-sm text-foreground">Gain Experience</p>
@@ -405,21 +407,19 @@ const CareerGuidance = ({ onBackToDesktop }: { onBackToDesktop?: () => void }) =
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {selectedPath && (
-        <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/10">
-          <CardContent className="p-6 text-center">
-            <h3 className="text-xl font-bold text-foreground mb-2">Ready to pursue {selectedPath}?</h3>
-            <p className="text-muted-foreground mb-4">Let's create a personalized roadmap for your career!</p>
+        <div className="gradient-card p-6 text-center">
+            <h3 className="text-xl font-bold text-white mb-2">Ready to pursue {selectedPath}?</h3>
+            <p className="text-white/70 mb-4">Let's create a personalized roadmap for your career!</p>
             <div className="flex justify-center gap-3 flex-wrap">
-              <Button>Create Roadmap</Button>
-              <Button variant="outline">Find Mentors</Button>
-              <Button variant="outline">Job Opportunities</Button>
+              <button className="btn-gradient bg-white !text-primary hover:!bg-white/90">Create Roadmap</button>
+              <button className="inline-flex items-center h-10 px-4 rounded-xl border border-white/30 text-white text-sm font-medium hover:bg-white/10 transition-all">Find Mentors</button>
+              <button className="inline-flex items-center h-10 px-4 rounded-xl border border-white/30 text-white text-sm font-medium hover:bg-white/10 transition-all">Job Opportunities</button>
             </div>
-          </CardContent>
-        </Card>
+        </div>
       )}
     </div>
   );

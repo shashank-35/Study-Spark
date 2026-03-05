@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,6 +12,7 @@ import {
   Code,
   Clock,
   Sparkles,
+  GripVertical,
 } from "lucide-react";
 
 interface Message {
@@ -44,6 +45,74 @@ const StudySparkChatbot = ({ isOpen, onClose }: StudySparkChatbotProps) => {
   const [isSending, setIsSending] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+
+  /* ── Drag State ── */
+  const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragOffset = useRef({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Reset drag position when chatbot opens (prevents off-screen on mobile)
+  useEffect(() => {
+    if (isOpen) setPosition(null);
+  }, [isOpen]);
+
+  // Clamp position within viewport
+  const clamp = useCallback((x: number, y: number) => {
+    const el = containerRef.current;
+    if (!el) return { x, y };
+    const rect = el.getBoundingClientRect();
+    const w = rect.width || 384;
+    const h = rect.height || 600;
+    const maxX = Math.max(0, window.innerWidth - w);
+    const maxY = Math.max(0, window.innerHeight - h);
+    return {
+      x: Math.max(0, Math.min(x, maxX)),
+      y: Math.max(0, Math.min(y, maxY)),
+    };
+  }, []);
+
+  // Re-clamp on window resize so chatbot stays visible
+  useEffect(() => {
+    const onResize = () => {
+      setPosition(prev => {
+        if (!prev) return null;
+        return clamp(prev.x, prev.y);
+      });
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [clamp]);
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    // Only drag from header area, skip on mobile <768px to avoid conflicts
+    const target = e.target as HTMLElement;
+    if (target.closest("button") || target.closest("input")) return;
+    // Disable drag on small mobile screens — chatbot is full-width
+    if (window.innerWidth < 640) return;
+    e.preventDefault();
+    setIsDragging(true);
+    const el = containerRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    dragOffset.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  }, []);
+
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    if (!isDragging) return;
+    const rawX = e.clientX - dragOffset.current.x;
+    const rawY = e.clientY - dragOffset.current.y;
+    setPosition(clamp(rawX, rawY));
+  }, [isDragging, clamp]);
+
+  const onPointerUp = useCallback((e: React.PointerEvent) => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    // Snap back: re-clamp final position
+    setPosition(prev => prev ? clamp(prev.x, prev.y) : null);
+    try { (e.target as HTMLElement).releasePointerCapture(e.pointerId); } catch { /* ok */ }
+  }, [isDragging, clamp]);
 
   const quickActions = [
     { label: "Quiz Me", icon: Brain, action: "quiz" },
@@ -207,19 +276,32 @@ const StudySparkChatbot = ({ isOpen, onClose }: StudySparkChatbotProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 sm:inset-x-auto sm:bottom-4 sm:right-4 z-50 animate-slide-up">
+    <div
+      ref={containerRef}
+      className={`fixed z-[9999] transition-[left,top] ${isDragging ? 'duration-0' : 'duration-200'} ${!position ? "inset-x-0 bottom-0 sm:inset-x-auto sm:bottom-5 sm:right-5" : ""}`}
+      style={{
+        ...(position
+          ? { left: position.x, top: position.y, right: "auto", bottom: "auto" }
+          : undefined),
+      }}
+    >
       <div
-        className={`transition-all duration-300 rounded-t-2xl sm:rounded-2xl border border-border/60 bg-card shadow-card-hover overflow-hidden flex flex-col ${
+        className={`transition-all duration-300 rounded-t-2xl sm:rounded-2xl border border-white/30 dark:border-white/10 bg-white/70 dark:bg-zinc-950/80 backdrop-blur-xl shadow-[0_8px_40px_rgba(0,0,0,0.15)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col ${
           isMinimized
             ? "w-full sm:w-80 h-16"
-            : "w-full sm:w-96 h-[calc(100dvh-env(safe-area-inset-top))] sm:h-[600px]"
+            : "w-full sm:w-96 h-[calc(100dvh-env(safe-area-inset-top))] sm:h-[600px] max-h-[100dvh]"
         }`}
       >
-        {/* ── Header ── */}
-        <div className="bg-primary px-4 py-3 flex items-center justify-between shrink-0">
+        {/* ── Draggable Header ── */}
+        <div
+          className={`bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-4 py-3 flex items-center justify-between shrink-0 ${isDragging ? "cursor-grabbing" : "cursor-grab"} touch-none select-none`}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+        >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
-              <Sparkles className="h-4 w-4 text-white" />
+              <GripVertical className="h-4 w-4 text-white/70" />
             </div>
             <div>
               <p className="text-sm font-semibold text-white leading-tight">Study Spark AI</p>
@@ -259,15 +341,15 @@ const StudySparkChatbot = ({ isOpen, onClose }: StudySparkChatbotProps) => {
                   className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
                 >
                   {message.sender === "ai" && (
-                    <div className="w-6 h-6 rounded-full bg-primary/15 flex items-center justify-center shrink-0 mr-2 mt-0.5">
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center shrink-0 mr-2 mt-0.5">
                       <Sparkles className="h-3 w-3 text-primary" />
                     </div>
                   )}
                   <div
                     className={`max-w-[78%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
                       message.sender === "user"
-                        ? "bg-secondary text-secondary-foreground rounded-br-sm"
-                        : "bg-muted text-foreground rounded-bl-sm"
+                        ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-br-sm shadow-sm"
+                        : "bg-white/50 dark:bg-white/[0.06] backdrop-blur-sm border border-white/40 dark:border-white/10 text-foreground rounded-bl-sm"
                     }`}
                   >
                     <p className="whitespace-pre-wrap">{message.text}</p>
@@ -278,10 +360,10 @@ const StudySparkChatbot = ({ isOpen, onClose }: StudySparkChatbotProps) => {
               {/* Typing indicator */}
               {isTyping && (
                 <div className="flex justify-start">
-                  <div className="w-6 h-6 rounded-full bg-primary/15 flex items-center justify-center shrink-0 mr-2 mt-0.5">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center shrink-0 mr-2 mt-0.5">
                     <Sparkles className="h-3 w-3 text-primary" />
                   </div>
-                  <div className="bg-muted rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-1">
+                  <div className="bg-white/50 dark:bg-white/[0.06] backdrop-blur-sm border border-white/40 dark:border-white/10 rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-1">
                     <span className="typing-dot" />
                     <span className="typing-dot" />
                     <span className="typing-dot" />
@@ -297,7 +379,7 @@ const StudySparkChatbot = ({ isOpen, onClose }: StudySparkChatbotProps) => {
                 <button
                   key={action.action}
                   onClick={() => handleQuickAction(action.action)}
-                  className="pill-action flex items-center justify-center gap-1.5 text-xs py-1.5"
+                  className="pill-action flex items-center justify-center gap-1.5 text-xs py-1.5 bg-white/50 dark:bg-white/[0.06] border border-white/40 dark:border-white/10 backdrop-blur-sm rounded-xl hover:border-primary/30 transition-all"
                 >
                   <action.icon className="h-3 w-3" />
                   {action.label}
@@ -313,13 +395,13 @@ const StudySparkChatbot = ({ isOpen, onClose }: StudySparkChatbotProps) => {
                   onChange={(e) => setInputText(e.target.value)}
                   placeholder="Ask me anything about BCA…"
                   onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage()}
-                  className="flex-1 h-9 text-sm bg-muted/60 border-border/60 focus:border-primary"
+                  className="flex-1 h-9 text-sm bg-white/40 dark:bg-white/[0.06] border-white/40 dark:border-white/15 focus:border-primary rounded-xl backdrop-blur-sm"
                   aria-label="Chat message input"
                 />
                 <Button
                   onClick={handleSendMessage}
                   size="icon"
-                  className="h-9 w-9 shrink-0 bg-primary hover:bg-primary/90"
+                  className="h-9 w-9 shrink-0 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 rounded-xl shadow-sm"
                   disabled={isSending || !inputText.trim()}
                   aria-label="Send message"
                 >
@@ -340,7 +422,7 @@ const StudySparkChatbot = ({ isOpen, onClose }: StudySparkChatbotProps) => {
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className="w-full flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-primary border border-dashed border-border/60 hover:border-primary rounded-xl py-2 transition-all duration-150 hover:bg-primary/5"
+                  className="w-full flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-primary border border-dashed border-white/40 dark:border-white/15 hover:border-primary/40 rounded-xl py-2 transition-all duration-150 hover:bg-primary/5 backdrop-blur-sm"
                   aria-label="Upload study notes"
                 >
                   {isUploading ? (

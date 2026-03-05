@@ -172,22 +172,170 @@
 }
 
 /* ============================================================
-   UTILITY CLASSES – Antigravity Design System
+   UTILITY CLASSES – Premium Design System
+   Consistent with landing page visual identity
    ============================================================ */
 
 @layer components {
 
-  /* ── Glassmorphic card ── */
-  .glass-card {
-    @apply bg-white/70 dark:bg-white/5 backdrop-blur-md border border-white/40 dark:border-white/10 rounded-2xl shadow-sm;
+  /* ── Premium page background with subtle mesh ── */
+  .app-bg {
+    background-color: hsl(var(--background));
+    background-image:
+      radial-gradient(at 20% 20%, hsl(var(--primary) / 0.04) 0%, transparent 50%),
+      radial-gradient(at 80% 80%, hsl(249 100% 88% / 0.05) 0%, transparent 50%),
+      radial-gradient(at 50% 0%, hsl(210 100% 50% / 0.03) 0%, transparent 60%);
+    background-attachment: fixed;
+  }
+  .dark .app-bg {
+    background-image:
+      radial-gradient(at 20% 20%, hsl(255 100% 83% / 0.06) 0%, transparent 50%),
+      radial-gradient(at 80% 80%, hsl(249 40% 35% / 0.08) 0%, transparent 50%),
+      radial-gradient(at 50% 0%, hsl(230 100% 50% / 0.04) 0%, transparent 60%);
   }
 
-  /* ── Primary gradient background ── */
-  .gradient-hero {
-    background: linear-gradient(160deg, #F5EFFF 0%, #CDC1FF 100%);
+  /* ── Glassmorphic card (primary – used everywhere) ── */
+  .glass-card {
+    @apply bg-white/60 dark:bg-white/[0.04] backdrop-blur-xl
+           border border-white/50 dark:border-white/[0.08]
+           rounded-2xl shadow-sm;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.25s ease;
   }
-  .dark .gradient-hero {
-    background: linear-gradient(160deg, #121212 0%, #1E1E27 100%);
+  .glass-card:hover {
+    @apply shadow-card-hover border-primary/20 dark:border-primary/15;
+    transform: translateY(-2px);
+  }
+
+  /* ── Glass card subtle variant (for nested cards) ── */
+  .glass-card-subtle {
+    @apply bg-white/40 dark:bg-white/[0.025] backdrop-blur-md
+           border border-white/30 dark:border-white/[0.06]
+           rounded-xl;
+  }
+
+  /* ── Gradient accent card (hero/banner) ── */
+  .gradient-card {
+    @apply relative overflow-hidden rounded-2xl;
+    background: linear-gradient(135deg,
+      hsl(var(--primary) / 0.9) 0%,
+      hsl(var(--primary)) 40%,
+      hsl(249 89% 70%) 100%
+    );
+  }
+  .dark .gradient-card {
+    background: linear-gradient(135deg,
+      hsl(var(--primary) / 0.7) 0%,
+      hsl(var(--primary) / 0.5) 40%,
+      hsl(249 60% 45%) 100%
+    );
+  }
+  .gradient-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 0% 0%, rgba(255,255,255,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 100% 100%, rgba(255,255,255,0.08) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  /* ── Premium stat card w/ gradient icon bg ── */
+  .stat-card {
+    @apply glass-card p-5 flex items-center gap-4;
+  }
+  .stat-card .stat-icon {
+    @apply w-12 h-12 rounded-xl flex items-center justify-center shrink-0
+           bg-gradient-to-br shadow-sm;
+  }
+  .stat-card .stat-value {
+    @apply text-2xl font-bold tabular-nums;
+  }
+  .stat-card .stat-label {
+    @apply text-xs text-muted-foreground mt-0.5;
+  }
+
+  /* ── Primary gradient button (matching landing CTA) ── */
+  .btn-gradient {
+    @apply inline-flex items-center justify-center gap-2 font-semibold text-white
+           rounded-xl px-6 py-2.5 text-sm
+           shadow-md transition-all duration-200;
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  }
+  .btn-gradient:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+  }
+  .btn-gradient:active {
+    transform: translateY(0);
+  }
+
+  /* ── Glow effect for important elements ── */
+  .glow-primary {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.2),
+                0 0 60px hsl(var(--primary) / 0.08);
+  }
+
+  /* ── Section title with accent line ── */
+  .section-title {
+    @apply text-lg font-semibold text-foreground flex items-center gap-3;
+  }
+  .section-title::before {
+    content: '';
+    @apply w-1 h-5 rounded-full bg-primary;
+  }
+
+  /* ── Quick action card (interactive tile) ── */
+  .action-tile {
+    @apply glass-card p-4 flex flex-col items-center justify-center gap-2.5
+           cursor-pointer outline-none;
+    min-height: 110px;
+  }
+  .action-tile:hover {
+    @apply border-primary/30;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px hsl(var(--primary) / 0.12);
+  }
+  .action-tile:focus-visible {
+    @apply ring-2 ring-ring;
+  }
+  .action-tile .action-icon {
+    @apply w-11 h-11 rounded-xl flex items-center justify-center
+           bg-gradient-to-br from-primary/10 to-primary/5
+           group-hover:from-primary/20 group-hover:to-primary/10
+           transition-colors;
+  }
+
+  /* ── Achievement badge card ── */
+  .achievement-card {
+    @apply glass-card p-5 space-y-2;
+    background: linear-gradient(135deg,
+      hsl(var(--card)) 0%,
+      hsl(var(--primary) / 0.03) 100%
+    );
+  }
+  .dark .achievement-card {
+    background: linear-gradient(135deg,
+      hsl(var(--card)) 0%,
+      hsl(var(--primary) / 0.06) 100%
+    );
+  }
+
+  /* ── Activity feed item ── */
+  .activity-item {
+    @apply flex items-center gap-3 p-3.5 rounded-xl
+           bg-white/40 dark:bg-white/[0.02]
+           border border-white/30 dark:border-white/[0.06]
+           hover:border-primary/15 dark:hover:border-primary/10
+           transition-all duration-200;
+  }
+
+  /* ── Progress track (unified) ── */
+  .progress-track {
+    @apply h-2 w-full bg-muted/60 rounded-full overflow-hidden;
+  }
+  .progress-fill {
+    @apply h-full bg-gradient-to-r from-primary to-blue-500 rounded-full
+           transition-all duration-700 ease-out;
   }
 
   /* ── Stat number highlight ── */
@@ -202,7 +350,7 @@
 
   /* ── Card hover lift ── */
   .card-hover {
-    @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;
+    @apply transition-all duration-200 hover:shadow-card-hover hover:-translate-y-0.5;
   }
 
   /* ── Progress bar brand fill ── */

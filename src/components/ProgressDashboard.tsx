@@ -56,12 +56,12 @@ const ProgressDashboard = ({ onBackToDesktop }: { onBackToDesktop?: () => void }
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i} className="border-border/60"><CardContent className="p-4 space-y-2"><Skeleton className="h-10 w-10 mx-auto rounded-xl" /><Skeleton className="h-6 w-12 mx-auto" /><Skeleton className="h-3 w-16 mx-auto" /></CardContent></Card>
+            <div key={i} className="glass-card p-4 space-y-2"><Skeleton className="h-10 w-10 mx-auto rounded-xl" /><Skeleton className="h-6 w-12 mx-auto" /><Skeleton className="h-3 w-16 mx-auto" /></div>
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="border-border/60"><CardContent className="p-6 space-y-4">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-xl" />)}</CardContent></Card>
-          <Card className="border-border/60"><CardContent className="p-6 space-y-4">{Array.from({ length: 7 }).map((_, i) => <Skeleton key={i} className="h-10 w-full rounded-xl" />)}</CardContent></Card>
+          <div className="glass-card p-6 space-y-4">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-xl" />)}</div>
+          <div className="glass-card p-6 space-y-4">{Array.from({ length: 7 }).map((_, i) => <Skeleton key={i} className="h-10 w-full rounded-xl" />)}</div>
         </div>
       </div>
     );
@@ -84,11 +84,11 @@ const ProgressDashboard = ({ onBackToDesktop }: { onBackToDesktop?: () => void }
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Progress Dashboard</h2>
-          <p className="text-muted-foreground text-sm mt-1">Your real-time study analytics</p>
+          <h2 className="section-title text-2xl">Progress Dashboard</h2>
+          <p className="text-muted-foreground text-sm mt-1 ml-5">Your real-time study analytics</p>
         </div>
         {onBackToDesktop && (
-          <Button onClick={onBackToDesktop} variant="outline" size="sm" className="gap-2 border-border/60 hover:border-primary hover:text-primary hover:bg-primary/5">
+          <Button onClick={onBackToDesktop} variant="outline" size="sm" className="gap-2 rounded-xl border-white/40 dark:border-white/[0.08] hover:border-primary/30 hover:text-primary hover:bg-primary/5">
             <ArrowLeft className="h-4 w-4" /> Back
           </Button>
         )}
@@ -97,30 +97,35 @@ const ProgressDashboard = ({ onBackToDesktop }: { onBackToDesktop?: () => void }
       {/* ── Stat Cards ── */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {statCards.map((card, i) => (
-          <Card key={i} className="border-border/60 shadow-sm hover:shadow-md transition-shadow">
-            <CardContent className="p-4 text-center">
-              <div className={`w-10 h-10 rounded-xl ${card.bg} flex items-center justify-center mx-auto mb-2`}>
-                <card.icon className={`h-5 w-5 ${card.color}`} />
-              </div>
-              <p className={`text-2xl font-bold ${card.color} tabular-nums`}>{card.value}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{card.label}</p>
-            </CardContent>
-          </Card>
+          <div key={i} className="glass-card p-4 text-center hover:shadow-lg transition-all">
+            <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${
+              i === 0 ? 'from-violet-500/20 to-purple-500/10' :
+              i === 1 ? 'from-blue-500/20 to-cyan-500/10' :
+              i === 2 ? 'from-green-500/20 to-emerald-500/10' :
+              i === 3 ? 'from-violet-500/20 to-indigo-500/10' :
+              i === 4 ? 'from-pink-500/20 to-rose-500/10' :
+              'from-orange-500/20 to-amber-500/10'
+            } flex items-center justify-center mx-auto mb-2 shadow-sm`}>
+              <card.icon className={`h-5 w-5 ${card.color}`} />
+            </div>
+            <p className={`text-2xl font-bold ${card.color} tabular-nums`}>{card.value}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{card.label}</p>
+          </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* ── Subject Progress ── */}
-        <Card className="border-border/60 shadow-sm">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-lg">
+        <div className="glass-card overflow-hidden">
+          <div className="p-5 pb-4 border-b border-white/20 dark:border-white/[0.06]">
+            <h3 className="section-title">
               <TrendingUp className="h-5 w-5 text-primary" />
               Subject Progress
-            </CardTitle>
-            <CardDescription>Your progress across all enrolled subjects</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1 ml-5">Your progress across all enrolled subjects</p>
+          </div>
+          <div className="p-5 space-y-3">
             {ctxSubjects.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">No subjects enrolled yet</p>
             ) : (
@@ -132,7 +137,7 @@ const ProgressDashboard = ({ onBackToDesktop }: { onBackToDesktop?: () => void }
                 const totalUnits = sp?.total_units ?? 0;
                 const lastAccessed = sp?.last_accessed_at;
                 return (
-                  <div key={sub.id} className="space-y-1.5 p-3 rounded-xl bg-muted/40 border border-border/40">
+                  <div key={sub.id} className="space-y-1.5 p-3 rounded-xl glass-card-subtle">
                     <div className="flex items-center justify-between">
                       <span className="font-medium text-sm text-foreground truncate">{sub.name}</span>
                       <div className="flex items-center gap-2 shrink-0 ml-2">
@@ -151,11 +156,9 @@ const ProgressDashboard = ({ onBackToDesktop }: { onBackToDesktop?: () => void }
                         <span className="text-xs font-semibold tabular-nums text-foreground">{pct}%</span>
                       </div>
                     </div>
-                    <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                    <div className="progress-track">
                       <div
-                        className={`h-full rounded-full transition-all duration-500 ${
-                          pct >= 100 ? "bg-green-500" : "bg-primary"
-                        }`}
+                        className={`progress-fill ${pct >= 100 ? "!bg-gradient-to-r !from-green-500 !to-emerald-500" : ""}`}
                         style={{ width: `${Math.min(pct, 100)}%` }}
                       />
                     </div>
@@ -174,31 +177,31 @@ const ProgressDashboard = ({ onBackToDesktop }: { onBackToDesktop?: () => void }
                 );
               })
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* ── Weekly Activity ── */}
-        <Card className="border-border/60 shadow-sm">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-lg">
+        <div className="glass-card overflow-hidden">
+          <div className="p-5 pb-4 border-b border-white/20 dark:border-white/[0.06]">
+            <h3 className="section-title">
               <Activity className="h-5 w-5 text-primary" />
               Weekly Activity
-            </CardTitle>
-            <CardDescription>
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1 ml-5">
               {totalWeekMinutes > 0
                 ? `${Math.floor(totalWeekMinutes / 60)}h ${totalWeekMinutes % 60}m studied · ${totalWeekSessions} sessions`
                 : "No study sessions this week"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </p>
+          </div>
+          <div className="p-5">
             <div className="space-y-2.5">
               {weeklyActivity.map((day) => (
-                <div key={day.date} className="flex items-center gap-3 p-2.5 rounded-xl bg-muted/40 border border-border/40">
+                <div key={day.date} className="flex items-center gap-3 p-2.5 rounded-xl glass-card-subtle">
                   <span className="font-semibold text-sm text-foreground w-10 shrink-0">{day.day}</span>
                   <div className="flex-1 min-w-0">
-                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                    <div className="progress-track">
                       <div
-                        className="h-full bg-primary rounded-full transition-all duration-500"
+                        className="progress-fill"
                         style={{ width: `${(day.minutes / maxMinutes) * 100}%` }}
                       />
                     </div>
@@ -212,20 +215,20 @@ const ProgressDashboard = ({ onBackToDesktop }: { onBackToDesktop?: () => void }
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* ── Achievements ── */}
-      <Card className="border-border/60 shadow-sm">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2 text-lg">
+      <div className="glass-card overflow-hidden">
+        <div className="p-5 pb-4 border-b border-white/20 dark:border-white/[0.06]">
+          <h3 className="section-title">
             <Trophy className="h-5 w-5 text-primary" />
             Achievements
-          </CardTitle>
-          <CardDescription>Milestones you've earned through your study journey</CardDescription>
-        </CardHeader>
-        <CardContent>
+          </h3>
+          <p className="text-sm text-muted-foreground mt-1 ml-5">Milestones you've earned through your study journey</p>
+        </div>
+        <div className="p-5">
           {achievements.length === 0 ? (
             <div className="py-10 text-center">
               <Trophy className="h-9 w-9 text-muted-foreground/30 mx-auto mb-2" />
@@ -236,13 +239,13 @@ const ProgressDashboard = ({ onBackToDesktop }: { onBackToDesktop?: () => void }
               {achievements.map((a) => (
                 <div
                   key={a.id}
-                  className="flex items-start gap-3 p-4 rounded-xl border border-border/50 bg-card/60 hover:shadow-sm transition-shadow"
+                  className="achievement-card flex items-start gap-3"
                 >
                   <span className="text-2xl leading-none">{a.icon || "🏆"}</span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <h4 className="font-semibold text-sm text-foreground">{a.title}</h4>
-                      <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 shrink-0 border-border/60">
+                      <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 shrink-0 border-white/30 dark:border-white/[0.06]">
                         {new Date(a.earned_at).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
                       </Badge>
                     </div>
@@ -252,19 +255,19 @@ const ProgressDashboard = ({ onBackToDesktop }: { onBackToDesktop?: () => void }
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* ── Recent Quiz Results ── */}
-      <Card className="border-border/60 shadow-sm">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2 text-lg">
+      <div className="glass-card overflow-hidden">
+        <div className="p-5 pb-4 border-b border-white/20 dark:border-white/[0.06]">
+          <h3 className="section-title">
             <Brain className="h-5 w-5 text-primary" />
             Recent Quiz Results
-          </CardTitle>
-          <CardDescription>Your latest quiz performance</CardDescription>
-        </CardHeader>
-        <CardContent>
+          </h3>
+          <p className="text-sm text-muted-foreground mt-1 ml-5">Your latest quiz performance</p>
+        </div>
+        <div className="p-5">
           {quizAttempts.length === 0 ? (
             <div className="py-10 text-center">
               <Brain className="h-9 w-9 text-muted-foreground/30 mx-auto mb-2" />
@@ -275,7 +278,7 @@ const ProgressDashboard = ({ onBackToDesktop }: { onBackToDesktop?: () => void }
               {quizAttempts.map((qa) => {
                 const pct = qa.total > 0 ? Math.round((qa.score / qa.total) * 100) : 0;
                 return (
-                  <div key={qa.id} className="flex items-center justify-between p-4 rounded-xl bg-muted/40 border border-border/40 hover:border-primary/30 transition-all">
+                  <div key={qa.id} className="flex items-center justify-between p-4 rounded-xl glass-card-subtle hover:border-primary/20 transition-all">
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm text-foreground">{qa.quiz_title || "Quiz"}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">
@@ -294,19 +297,19 @@ const ProgressDashboard = ({ onBackToDesktop }: { onBackToDesktop?: () => void }
               })}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* ── Recent Activity ── */}
-      <Card className="border-border/60 shadow-sm">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2 text-lg">
+      <div className="glass-card overflow-hidden">
+        <div className="p-5 pb-4 border-b border-white/20 dark:border-white/[0.06]">
+          <h3 className="section-title">
             <Code className="h-5 w-5 text-primary" />
             Recent Activity
-          </CardTitle>
-          <CardDescription>Your latest study activity</CardDescription>
-        </CardHeader>
-        <CardContent>
+          </h3>
+          <p className="text-sm text-muted-foreground mt-1 ml-5">Your latest study activity</p>
+        </div>
+        <div className="p-5">
           {activity.length === 0 ? (
             <div className="py-10 text-center">
               <Activity className="h-9 w-9 text-muted-foreground/30 mx-auto mb-2" />
@@ -315,11 +318,16 @@ const ProgressDashboard = ({ onBackToDesktop }: { onBackToDesktop?: () => void }
           ) : (
             <div className="space-y-3">
               {activity.map((a) => (
-                <div key={a.id} className="flex items-start gap-3 p-3 rounded-xl bg-muted/40 border border-border/40">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                    {a.type === "quiz_completed" ? <Brain className="h-4 w-4 text-primary" /> :
-                     a.type === "session_completed" ? <BookOpen className="h-4 w-4 text-primary" /> :
-                     a.type === "achievement_earned" ? <Trophy className="h-4 w-4 text-primary" /> :
+                <div key={a.id} className="activity-item">
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br ${
+                    a.type === "quiz_completed" ? "from-violet-500/15 to-purple-500/5" :
+                    a.type === "session_completed" ? "from-blue-500/15 to-cyan-500/5" :
+                    a.type === "achievement_earned" ? "from-amber-500/15 to-orange-500/5" :
+                    "from-primary/15 to-primary/5"
+                  }`}>
+                    {a.type === "quiz_completed" ? <Brain className="h-4 w-4 text-violet-500" /> :
+                     a.type === "session_completed" ? <BookOpen className="h-4 w-4 text-blue-500" /> :
+                     a.type === "achievement_earned" ? <Trophy className="h-4 w-4 text-amber-500" /> :
                      <Activity className="h-4 w-4 text-primary" />}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -333,32 +341,30 @@ const ProgressDashboard = ({ onBackToDesktop }: { onBackToDesktop?: () => void }
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* ── Motivational Banner ── */}
-      <Card className="border-primary/20 bg-gradient-to-br from-primary/5 via-secondary/10 to-primary/5 shadow-sm">
-        <CardContent className="p-8 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-primary/15 flex items-center justify-center mx-auto mb-4">
-            <Star className="h-7 w-7 text-primary" />
-          </div>
-          <h3 className="text-xl font-bold text-foreground mb-2">
-            {s.currentStreak > 0 ? "You're on fire! 🔥" : "Start your streak today! 🌟"}
-          </h3>
-          <p className="text-muted-foreground text-sm max-w-md mx-auto">
-            {s.currentStreak > 0 ? (
-              <>
-                <span className="font-bold text-primary">{s.currentStreak}-day</span> streak ·{" "}
-                <span className="font-bold text-primary">{s.overallProgress}%</span> overall progress ·{" "}
-                <span className="font-bold text-primary">{Math.round(s.totalStudyMinutes / 60)}</span> hours studied
-              </>
-            ) : (
-              "Complete a study session to start building your streak!"
-            )}
-          </p>
-          <p className="text-xs text-muted-foreground mt-3">📊 All data synced from Supabase in real-time</p>
-        </CardContent>
-      </Card>
+      <div className="gradient-card p-8 text-center text-white">
+        <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <Star className="h-7 w-7 text-white" />
+        </div>
+        <h3 className="text-xl font-bold mb-2">
+          {s.currentStreak > 0 ? "You're on fire! 🔥" : "Start your streak today! 🌟"}
+        </h3>
+        <p className="text-white/80 text-sm max-w-md mx-auto">
+          {s.currentStreak > 0 ? (
+            <>
+              <span className="font-bold text-white">{s.currentStreak}-day</span> streak ·{" "}
+              <span className="font-bold text-white">{s.overallProgress}%</span> overall progress ·{" "}
+              <span className="font-bold text-white">{Math.round(s.totalStudyMinutes / 60)}</span> hours studied
+            </>
+          ) : (
+            "Complete a study session to start building your streak!"
+          )}
+        </p>
+        <p className="text-xs text-white/50 mt-3">All data synced from Supabase in real-time</p>
+      </div>
     </div>
   );
 };

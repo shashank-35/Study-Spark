@@ -939,6 +939,102 @@ app.get("/api/health", (req, res) => {
   res.json({ ok: true });
 });
 
+// ── Daily AI Study Plan ─────────────────────────────────────────────────
+// Generates a personalised study plan based on user data, cached for 24 h.
+const studyPlanCache = new Map(); // key: `${userId}:${dateStr}` → plan JSON
+
+app.post("/api/study-plan", async (req, res) => {
+  try {
+    const { userId, subjects = [], progress = {}, pendingTasks = [], studyMinutes = 0, weakSubjects = [], quizCount = 0 } = req.body || {};
+
+    if (!userId) return res.status(400).json({ error: "userId required" });
+
+    const dateStr = new Date().toISOString().split("T")[0];
+    const cacheKey = `${userId}:${dateStr}`;
+
+    // Return cached plan if it exists for today
+    if (studyPlanCache.has(cacheKey)) {
+      return res.json(studyPlanCache.get(cacheKey));
+    }
+
+    if (!groq) {
+      const fallback = {
+        plan: [
+          "Review your most recent subject for 30 minutes",
+          "Complete 1 pending quiz",
+          "Revisit any weak topics from yesterday",
+        ],
+        estimated_time: "60 minutes",
+        generated_at: new Date().toISOString(),
+      };
+      studyPlanCache.set(cacheKey, fallback);
+      return res.json(fallback);
+    }
+
+    const subjectList = subjects.length > 0 ? subjects.join(", ") : "general BCA subjects";
+    const weakList = weakSubjects.length > 0 ? weakSubjects.join(", ") : "none identified yet";
+    const taskList = pendingTasks.length > 0 ? pendingTasks.slice(0, 5).join("; ") : "none";
+
+    const prompt = `You are an AI study planner for a BCA student. Generate a concise daily study plan.
+
+Student context:
+- Subjects enrolled: ${subjectList}
+- Overall study time so far: ${studyMinutes} minutes
+- Quizzes completed: ${quizCount}
+- Weak subjects: ${weakList}
+- Pending tasks: ${taskList}
+- Progress data: ${JSON.stringify(progress).slice(0, 500)}
+
+Return a JSON object (no markdown, no code fences) with exactly this schema:
+{
+  "plan": ["step 1", "step 2", "step 3", "step 4"],
+  "estimated_time": "X minutes"
+}
+
+Rules:
+- Generate 3-5 actionable study steps
+- Each step should be specific with a subject name and duration
+- Prioritise weak subjects and pending tasks
+- Total estimated time should be realistic (45-90 minutes)
+- Be encouraging and concise`;
+
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        { role: "system", content: "You are a helpful study planner AI. Return valid JSON only." },
+        { role: "user", content: prompt },
+      ],
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.7,
+      max_completion_tokens: 512,
+    });
+
+    const raw = chatCompletion.choices[0]?.message?.content || "";
+    // Extract JSON from response (handle possible markdown fences)
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonMatch ? jsonMatch[0] : raw);
+    } catch {
+      parsed = {
+        plan: ["Study your weakest subject for 30 minutes", "Complete 1 quiz", "Review yesterday's notes"],
+        estimated_time: "60 minutes",
+      };
+    }
+
+    const result = {
+      plan: Array.isArray(parsed.plan) ? parsed.plan.slice(0, 5) : ["Study for 30 minutes"],
+      estimated_time: parsed.estimated_time || "60 minutes",
+      generated_at: new Date().toISOString(),
+    };
+
+    studyPlanCache.set(cacheKey, result);
+    return res.json(result);
+  } catch (e) {
+    console.error("Study plan error:", e);
+    return res.status(500).json({ error: "Failed to generate study plan" });
+  }
+});
+
 // Test Groq API endpoint
 app.get("/api/test-groq", async (req, res) => {
   try {

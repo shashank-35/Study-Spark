@@ -5,6 +5,7 @@ import {
   Plus, Trash2, CheckCircle2, Circle, Clock, Target, BookOpen, TrendingUp,
   Calendar, Flame, Timer, ArrowLeft, AlertCircle, Sparkles, Play, Pause,
   RotateCcw, GraduationCap, ListTodo, Zap, BarChart3, Quote, Edit3, Save, X,
+  RefreshCw, Brain,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -101,7 +102,7 @@ function FocusTimer() {
   const pct = ((total - sec) / total) * 100;
   const radius = 42, circ = 2 * Math.PI * radius;
   return (
-    <Card className="border-border/30 bg-gradient-to-br from-card to-card/80 backdrop-blur-sm">
+    <Card className="border-white/20 dark:border-white/[0.06] bg-white/60 dark:bg-white/[0.04] backdrop-blur-xl rounded-2xl shadow-sm">
       <CardContent className="pt-5 pb-4 flex flex-col items-center">
         <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">
           {mode === "focus" ? "🎯 Focus" : "☕ Break"}
@@ -121,7 +122,7 @@ function FocusTimer() {
           </div>
         </div>
         <div className="flex gap-2 mt-4">
-          <Button size="sm" variant="outline" onClick={() => setRunning(!running)} className="gap-1.5 rounded-full px-4">
+          <Button size="sm" variant="outline" onClick={() => setRunning(!running)} className="gap-1.5 rounded-full px-4 border-white/40 dark:border-white/[0.08] hover:border-primary/30">
             {running ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
             {running ? "Pause" : "Start"}
           </Button>
@@ -138,13 +139,167 @@ function FocusTimer() {
 function QuoteCard() {
   const [q] = useState(getRandomQuote);
   return (
-    <Card className="border-border/30 bg-gradient-to-br from-violet-500/5 to-fuchsia-500/5">
+    <Card className="border-white/20 dark:border-white/[0.06] bg-white/60 dark:bg-white/[0.04] backdrop-blur-xl rounded-2xl">
       <CardContent className="pt-5 pb-4">
         <Quote className="h-5 w-5 text-violet-400/60 mb-2" />
         <p className="text-sm italic text-foreground/80 leading-relaxed">"{q.text}"</p>
         <p className="text-xs text-muted-foreground mt-2">— {q.author}</p>
       </CardContent>
     </Card>
+  );
+}
+
+/* ── Smart Study Plan (AI-powered daily recommendation) ────────────────── */
+function SmartStudyPlan({ userId, sessions, todos }: { userId: string; sessions: StudySession[]; todos: StudyTodo[] }) {
+  const [plan, setPlan] = useState<{ plan: string[]; estimated_time: string; generated_at?: string } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+
+  // Stable context ref to avoid re-fetching on every sessions/todos change
+  const contextRef = useRef({ sessions, todos });
+  contextRef.current = { sessions, todos };
+
+  const fetchPlan = useCallback(async (force = false) => {
+    // Check localStorage cache first (24 h TTL)
+    const cacheKey = `studyspark_daily_plan_${userId}`;
+    if (!force) {
+      try {
+        const cached = JSON.parse(localStorage.getItem(cacheKey) || "null");
+        if (cached && cached.generated_at) {
+          const age = Date.now() - new Date(cached.generated_at).getTime();
+          if (age < 24 * 60 * 60 * 1000) {
+            setPlan(cached);
+            return;
+          }
+        }
+      } catch { /* ignore */ }
+    }
+
+    setLoading(true);
+    setError(false);
+    try {
+      const { sessions: s, todos: t } = contextRef.current;
+      // Gather context
+      const subjects = [...new Set(s.map(x => x.subject))];
+      const totalMinutes = s.reduce((a, x) => a + (x.actual_duration ?? x.duration), 0);
+      const pendingTasks = t.filter(x => !x.completed).map(x => x.task).slice(0, 5);
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 12000);
+      const res = await fetch("/api/study-plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({
+          userId,
+          subjects,
+          progress: {},
+          pendingTasks,
+          studyMinutes: totalMinutes,
+          weakSubjects: [],
+          quizCount: 0,
+        }),
+      });
+      clearTimeout(timeout);
+      if (!res.ok) throw new Error("fail");
+      const data = await res.json();
+      setPlan(data);
+      localStorage.setItem(cacheKey, JSON.stringify(data));
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, [userId]);
+
+  // Only fetch once on mount (uses cache for 24h)
+  const hasFetched = useRef(false);
+  useEffect(() => {
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      fetchPlan();
+    }
+  }, [fetchPlan]);
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-500/10 via-fuchsia-500/5 to-transparent border border-violet-500/20 p-5 sm:p-6">
+        {/* Decorative glow */}
+        <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-violet-500/10 blur-3xl pointer-events-none" />
+
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-sm">
+                <Brain className="h-4.5 w-4.5 text-white" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5">
+                  📅 Today's Smart Study Plan
+                </h3>
+                <p className="text-[11px] text-muted-foreground">AI-powered daily recommendation</p>
+              </div>
+            </div>
+            <button
+              onClick={() => fetchPlan(true)}
+              disabled={loading}
+              className="inline-flex items-center gap-1.5 text-xs text-violet-500 hover:text-violet-400 bg-violet-500/10 hover:bg-violet-500/15 rounded-lg px-3 py-1.5 transition-all disabled:opacity-50"
+            >
+              <RefreshCw className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
+              {loading ? "Generating…" : "New Plan"}
+            </button>
+          </div>
+
+          {loading && !plan ? (
+            <div className="space-y-3 py-2">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="flex items-start gap-3 animate-pulse">
+                  <div className="w-6 h-6 rounded-full bg-violet-500/20 shrink-0 mt-0.5" />
+                  <div className="flex-1 space-y-1.5">
+                    <div className="h-3 bg-violet-500/10 rounded w-3/4" />
+                    <div className="h-2 bg-violet-500/5 rounded w-1/2" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : error ? (
+            <div className="py-4 text-center space-y-2">
+              <p className="text-sm text-muted-foreground">Unable to generate plan right now.</p>
+              <p className="text-xs text-muted-foreground/70">Please try again later.</p>
+              <button onClick={() => fetchPlan(true)} className="inline-flex items-center gap-1.5 text-xs text-violet-500 hover:text-violet-400 bg-violet-500/10 hover:bg-violet-500/15 rounded-lg px-3 py-1.5 transition-all mt-1">
+                <RefreshCw className="h-3 w-3" /> Retry
+              </button>
+            </div>
+          ) : plan ? (
+            <div className="space-y-2.5">
+              {plan.plan.map((step, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.08, duration: 0.3 }}
+                  className="flex items-start gap-3 p-2.5 rounded-xl bg-white/40 dark:bg-white/[0.04] border border-white/30 dark:border-white/[0.06]"
+                >
+                  <span className="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                    {i + 1}
+                  </span>
+                  <p className="text-sm text-foreground leading-relaxed">{step}</p>
+                </motion.div>
+              ))}
+
+              <div className="flex items-center justify-between mt-3 pt-3 border-t border-violet-500/10">
+                <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Clock className="h-3 w-3" /> Estimated: <strong className="text-foreground">{plan.estimated_time}</strong>
+                </span>
+                <span className="text-[10px] text-muted-foreground/50">
+                  {plan.generated_at ? new Date(plan.generated_at).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }) : ""}
+                </span>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </motion.div>
   );
 }
 
@@ -359,7 +514,7 @@ export default function StudyPlanner({ onBackToDesktop }: Props) {
       </motion.div>
 
       {/* ── TABS ────────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-muted/40 border border-border/30 backdrop-blur-sm">
+      <div className="flex items-center gap-1 p-1.5 rounded-2xl glass-card">
         {tabs.map(t => {
           const I = t.icon;
           return (
@@ -394,9 +549,12 @@ export default function StudyPlanner({ onBackToDesktop }: Props) {
               <StatCard icon={Zap} label="Today" value={fmtMin(stats.todayMinutes)} sub={`${stats.todaySessions} sessions`} gradient="bg-gradient-to-br from-rose-500 to-pink-500" delay={0.2} />
             </div>
 
+            {/* AI Daily Study Plan */}
+            <SmartStudyPlan userId={userId} sessions={sessions} todos={todos} />
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <FocusTimer />
-              <Card className="border-border/30 bg-card/70 backdrop-blur-sm">
+              <Card className="glass-card">
                 <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><BarChart3 className="h-4 w-4 text-violet-400" /> This Week</CardTitle></CardHeader>
                 <CardContent><WeeklyChart data={stats.weeklyMinutes} /></CardContent>
               </Card>
@@ -405,7 +563,7 @@ export default function StudyPlanner({ onBackToDesktop }: Props) {
 
             {/* Subject breakdown */}
             {stats.subjectBreakdown.length > 0 && (
-              <Card className="border-border/30 bg-card/70 backdrop-blur-sm">
+              <Card className="glass-card">
                 <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><BookOpen className="h-4 w-4 text-cyan-400" /> Subject Breakdown</CardTitle></CardHeader>
                 <CardContent>
                   <div className="space-y-2">
@@ -426,7 +584,7 @@ export default function StudyPlanner({ onBackToDesktop }: Props) {
             )}
 
             {/* Pending tasks preview */}
-            <Card className="border-border/30 bg-card/70 backdrop-blur-sm">
+            <Card className="glass-card">
               <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><ListTodo className="h-4 w-4 text-amber-400" /> Pending Tasks {pendingTodos.length > 0 && <Badge variant="secondary" className="text-[10px]">{pendingTodos.length}</Badge>}</CardTitle></CardHeader>
               <CardContent>
                 {pendingTodos.length === 0 ? <p className="text-sm text-muted-foreground text-center py-4">All caught up! 🎉</p> : (
@@ -458,7 +616,7 @@ export default function StudyPlanner({ onBackToDesktop }: Props) {
 
             <AnimatePresence>{showSF && (
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
-                <Card className="border-violet-500/30 bg-violet-500/5">
+                <Card className="border-violet-500/30 glass-card !bg-violet-500/5 dark:!bg-violet-500/10">
                   <CardContent className="pt-5 space-y-3">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <Input placeholder="Subject (e.g., Data Structures)" value={sf.subject} onChange={e => setSf({ ...sf, subject: e.target.value })} className="bg-background rounded-xl" />
@@ -530,7 +688,7 @@ export default function StudyPlanner({ onBackToDesktop }: Props) {
 
             <AnimatePresence>{showGF && (
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
-                <Card className="border-violet-500/30 bg-violet-500/5">
+                <Card className="border-violet-500/30 glass-card !bg-violet-500/5 dark:!bg-violet-500/10">
                   <CardContent className="pt-5 space-y-3">
                     <Input placeholder="Goal title" value={gf.title} onChange={e => setGf({ ...gf, title: e.target.value })} className="bg-background rounded-xl" />
                     <Input placeholder="Description (optional)" value={gf.description} onChange={e => setGf({ ...gf, description: e.target.value })} className="bg-background rounded-xl" />
@@ -622,7 +780,7 @@ export default function StudyPlanner({ onBackToDesktop }: Props) {
 
             <AnimatePresence>{showTF && (
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
-                <Card className="border-violet-500/30 bg-violet-500/5">
+                <Card className="border-violet-500/30 glass-card !bg-violet-500/5 dark:!bg-violet-500/10">
                   <CardContent className="pt-5 space-y-3">
                     <Input placeholder="What do you need to do?" value={tf.task} onChange={e => setTf({ ...tf, task: e.target.value })} className="bg-background rounded-xl" onKeyDown={e => e.key === "Enter" && handleAddTodo()} autoFocus />
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

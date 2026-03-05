@@ -282,9 +282,9 @@ Please give me a useful hint that guides me in the right direction without givin
 
   // ── Render ────────────────────────────────────────────────────────────
   return (
-    <div className="w-full min-h-screen bg-background">
+    <div className="w-full min-h-screen app-bg">
       {/* ── Header ────────────────────────────────────────────────── */}
-      <div className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-4 sm:px-6 py-4 sm:py-5">
+      <div className="gradient-card rounded-none text-white px-4 sm:px-6 py-4 sm:py-5">
         <div className="max-w-screen-xl mx-auto flex items-center justify-between flex-wrap gap-3">
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -371,7 +371,7 @@ Please give me a useful hint that guides me in the right direction without givin
 
               {/* Tabs: Description | Output | AI Hint */}
               <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="bg-muted rounded-lg h-8">
+                <TabsList className="bg-white/50 dark:bg-white/[0.04] backdrop-blur-sm border border-white/30 dark:border-white/[0.06] rounded-xl h-8">
                   <TabsTrigger value="description" className="text-xs h-6">
                     Description
                   </TabsTrigger>
@@ -385,8 +385,7 @@ Please give me a useful hint that guides me in the right direction without givin
 
                 {/* Description */}
                 <TabsContent value="description">
-                    <Card className="shadow-sm border-border">
-                    <CardContent className="pt-4 space-y-4">
+                    <div className="glass-card p-4 space-y-4">
                       <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">
                         {selectedProblem.description}
                       </p>
@@ -408,14 +407,12 @@ Please give me a useful hint that guides me in the right direction without givin
                           </div>
                         </div>
                       )}
-                    </CardContent>
-                  </Card>
+                    </div>
                 </TabsContent>
 
                 {/* Output */}
                 <TabsContent value="output">
-                  <Card className="shadow-sm border-border">
-                    <CardContent className="pt-4">
+                  <div className="glass-card p-4">
                       {running || submitting ? (
                         <div className="flex items-center gap-2 text-muted-foreground py-4">
                           <Loader2 className="h-4 w-4 animate-spin" />
@@ -466,14 +463,12 @@ Please give me a useful hint that guides me in the right direction without givin
                           Run or Submit your code to see output here.
                         </p>
                       )}
-                    </CardContent>
-                  </Card>
+                  </div>
                 </TabsContent>
 
                 {/* AI Hint */}
                 <TabsContent value="hint">
-                  <Card className="shadow-sm border-border">
-                    <CardContent className="pt-4 space-y-3">
+                  <div className="glass-card p-4 space-y-3">
                       <Button
                         size="sm"
                         variant="outline"
@@ -500,8 +495,7 @@ Please give me a useful hint that guides me in the right direction without givin
                           Click "Get AI Hint" to get a contextual hint from Gemini without seeing the full solution.
                         </p>
                       )}
-                    </CardContent>
-                  </Card>
+                  </div>
                 </TabsContent>
               </Tabs>
 
@@ -515,29 +509,29 @@ Please give me a useful hint that guides me in the right direction without givin
               />
 
               {/* ── Custom Stdin ─────────────────────────────────────── */}
-              <Card className="shadow-sm border-border">
-                <CardHeader className="py-2 px-4">
-                  <CardTitle className="text-xs text-muted-foreground font-medium">
+              <div className="glass-card overflow-hidden">
+                <div className="py-2 px-4 border-b border-white/20 dark:border-white/[0.06]">
+                  <p className="text-xs text-muted-foreground font-medium">
                     Custom Input (stdin)
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0 px-4 pb-3">
+                  </p>
+                </div>
+                <div className="px-4 pb-3 pt-2">
                   <textarea
                     value={stdin}
                     onChange={(e) => setStdin(e.target.value)}
                     rows={2}
                     placeholder="Optional: provide stdin for your program"
-                    className="w-full text-sm font-mono p-2 border border-border rounded resize-y bg-muted focus:outline-none focus:ring-2 focus:ring-violet-300 text-foreground"
+                    className="w-full text-sm font-mono p-2 border border-white/30 dark:border-white/[0.08] rounded-xl resize-y bg-white/40 dark:bg-white/[0.03] focus:outline-none focus:ring-2 focus:ring-violet-300 text-foreground backdrop-blur-sm"
                   />
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
               {/* ── Action buttons ───────────────────────────────────── */}
               <div className="flex gap-3">
-                <Button
+                <button
                   onClick={handleRun}
                   disabled={running || submitting || !code.trim()}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+                  className="btn-gradient flex-1 !bg-gradient-to-r !from-blue-500 !to-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {running ? (
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -545,11 +539,11 @@ Please give me a useful hint that guides me in the right direction without givin
                     <Play className="h-4 w-4 mr-2" />
                   )}
                   Run Code
-                </Button>
-                <Button
+                </button>
+                <button
                   onClick={handleSubmit}
                   disabled={running || submitting || !code.trim()}
-                  className="flex-1 bg-green-600 hover:bg-green-700 disabled:opacity-50"
+                  className="btn-gradient flex-1 !bg-gradient-to-r !from-green-500 !to-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {submitting ? (
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -557,7 +551,7 @@ Please give me a useful hint that guides me in the right direction without givin
                     <Zap className="h-4 w-4 mr-2" />
                   )}
                   Submit
-                </Button>
+                </button>
               </div>
             </>
           ) : (

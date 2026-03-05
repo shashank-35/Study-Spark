@@ -247,17 +247,19 @@ const ProfileSection = ({ user, isAdmin = false, onBackToDesktop, onUpdateProfil
       <Section>
         <motion.div
           variants={fadeUp}
-          className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/70 backdrop-blur-lg p-6 md:p-8"
+          className="glass-card p-6 md:p-8"
         >
+          {/* Gradient accent strip */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-t-2xl" />
           {/* Subtle glow */}
-          <div className="absolute -top-24 -right-24 w-56 h-56 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
+          <div className="absolute -top-24 -right-24 w-56 h-56 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
 
           <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-6">
             {/* Avatar */}
             <div className="relative group shrink-0 self-center md:self-auto">
               <Avatar className="w-24 h-24 border-[3px] border-primary/20 shadow-sm transition-transform duration-200 group-hover:scale-105">
                 <AvatarImage src={clerkUser?.imageUrl ?? ""} alt={user.name} />
-                <AvatarFallback className="text-2xl bg-primary/10 text-primary font-semibold">{initials}</AvatarFallback>
+                <AvatarFallback className="text-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-semibold">{initials}</AvatarFallback>
               </Avatar>
               <button
                 onClick={() => clerkUser?.setProfileImage && toast.info("Use Clerk dashboard to change avatar")}
@@ -289,10 +291,10 @@ const ProfileSection = ({ user, isAdmin = false, onBackToDesktop, onUpdateProfil
 
             {/* Actions */}
             <div className="flex flex-wrap items-center justify-center md:justify-end gap-2 shrink-0">
-              <Button size="sm" variant="outline" onClick={() => setEditOpen(true)} className="gap-1.5 h-9 text-xs">
+              <button onClick={() => setEditOpen(true)} className="btn-gradient h-9 px-3.5 text-xs gap-1.5 inline-flex items-center">
                 <Edit3 className="h-3.5 w-3.5" /> Edit Profile
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => setSettingsOpen(true)} className="gap-1.5 h-9 text-xs">
+              </button>
+              <Button size="sm" variant="outline" onClick={() => setSettingsOpen(true)} className="gap-1.5 h-9 text-xs rounded-xl border-white/40 dark:border-white/20 hover:border-primary/30 backdrop-blur-sm">
                 <Settings className="h-3.5 w-3.5" /> Settings
               </Button>
               {isAdmin && (
@@ -310,35 +312,35 @@ const ProfileSection = ({ user, isAdmin = false, onBackToDesktop, onUpdateProfil
 
       {/* ━━ 2. ACADEMIC SUMMARY ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <Section className="space-y-4">
-        <motion.h2 variants={fadeUp} className="text-lg font-semibold text-foreground">Academic Summary</motion.h2>
+        <motion.h2 variants={fadeUp} className="section-title text-lg">Academic Summary</motion.h2>
 
         {loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
             {Array.from({ length: 5 }).map((_, i) => (
-              <Card key={i} className="border-border/50"><CardContent className="p-5 space-y-2"><Skeleton className="h-6 w-14" /><Skeleton className="h-3 w-20" /></CardContent></Card>
+              <div key={i} className="glass-card p-5 space-y-2"><Skeleton className="h-6 w-14" /><Skeleton className="h-3 w-20" /></div>
             ))}
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
             {/* Progress ring – spans first card on mobile */}
             <motion.div variants={fadeUp} custom={0}>
-              <Card className="border-border/50 hover:shadow-sm transition-shadow h-full">
-                <CardContent className="p-5 flex flex-col items-center justify-center gap-2">
+              <div className="glass-card h-full">
+                <div className="p-5 flex flex-col items-center justify-center gap-2">
                   <ProgressRing value={stats.overallProgress} size={76} strokeWidth={5} />
                   <p className="text-xs text-muted-foreground">Overall</p>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </motion.div>
 
             {([
-              { icon: BookOpen, value: stats.totalSubjects, label: "Enrolled", color: "text-primary", bg: "bg-primary/8" },
-              { icon: Target, value: stats.completedSubjects, label: "Completed", color: "text-green-500", bg: "bg-green-500/8" },
-              { icon: Brain, value: stats.quizzesCompleted, label: "Quizzes", color: "text-violet-500", bg: "bg-violet-500/8" },
-              { icon: TrendingUp, value: stats.avgQuizScore, label: "Avg Score", color: "text-blue-500", bg: "bg-blue-500/8", suffix: "%" },
+              { icon: BookOpen, value: stats.totalSubjects, label: "Enrolled", color: "text-primary", bg: "bg-gradient-to-br from-indigo-500/15 to-purple-500/15" },
+              { icon: Target, value: stats.completedSubjects, label: "Completed", color: "text-green-500", bg: "bg-gradient-to-br from-green-500/15 to-emerald-500/15" },
+              { icon: Brain, value: stats.quizzesCompleted, label: "Quizzes", color: "text-violet-500", bg: "bg-gradient-to-br from-violet-500/15 to-fuchsia-500/15" },
+              { icon: TrendingUp, value: stats.avgQuizScore, label: "Avg Score", color: "text-blue-500", bg: "bg-gradient-to-br from-blue-500/15 to-cyan-500/15", suffix: "%" },
             ] as const).map((s, i) => (
               <motion.div key={i} variants={fadeUp} custom={i + 1}>
-                <Card className="border-border/50 hover:shadow-sm transition-shadow h-full">
-                  <CardContent className="p-5 flex items-center gap-3">
+                <div className="glass-card h-full">
+                  <div className="p-5 flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-xl ${s.bg} flex items-center justify-center shrink-0`}>
                       <s.icon className={`h-4.5 w-4.5 ${s.color}`} />
                     </div>
@@ -348,8 +350,8 @@ const ProfileSection = ({ user, isAdmin = false, onBackToDesktop, onUpdateProfil
                       </p>
                       <p className="text-[11px] text-muted-foreground">{s.label}</p>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -359,27 +361,23 @@ const ProfileSection = ({ user, isAdmin = false, onBackToDesktop, onUpdateProfil
       {/* ━━ 3. SUBJECT PROGRESS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <Section className="space-y-4">
         <motion.div variants={fadeUp} className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-foreground">Subject Progress</h2>
+          <h2 className="section-title text-lg">Subject Progress</h2>
           {semesters.length > 1 && (
             <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-thin">
-              <Button
-                size="sm"
-                variant={semFilter === "all" ? "default" : "ghost"}
-                className="h-7 text-xs px-2.5"
+              <button
+                className={`h-7 text-xs px-2.5 rounded-lg transition-all font-medium ${semFilter === "all" ? "bg-primary text-white shadow-sm" : "text-muted-foreground hover:text-foreground bg-white/40 dark:bg-white/5 backdrop-blur-sm"}`}
                 onClick={() => setSemFilter("all")}
               >
                 All
-              </Button>
+              </button>
               {semesters.map((s) => (
-                <Button
+                <button
                   key={s}
-                  size="sm"
-                  variant={semFilter === s ? "default" : "ghost"}
-                  className="h-7 text-xs px-2.5"
+                  className={`h-7 text-xs px-2.5 rounded-lg transition-all font-medium ${semFilter === s ? "bg-primary text-white shadow-sm" : "text-muted-foreground hover:text-foreground bg-white/40 dark:bg-white/5 backdrop-blur-sm"}`}
                   onClick={() => setSemFilter(s)}
                 >
                   Sem {s}
-                </Button>
+                </button>
               ))}
             </div>
           )}
@@ -388,7 +386,7 @@ const ProfileSection = ({ user, isAdmin = false, onBackToDesktop, onUpdateProfil
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-20 rounded-xl" />
+              <div key={i} className="glass-card p-5 space-y-2"><Skeleton className="h-4 w-32" /><Skeleton className="h-2 w-full mt-2" /></div>
             ))}
           </div>
         ) : filteredSubjects.length === 0 ? (
@@ -400,8 +398,8 @@ const ProfileSection = ({ user, isAdmin = false, onBackToDesktop, onUpdateProfil
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {filteredSubjects.map((subj, i) => (
               <motion.div key={subj.subject_id} variants={fadeUp} custom={i}>
-                <Card className="border-border/50 hover:shadow-sm hover:border-primary/20 transition-all duration-200">
-                  <CardContent className="p-5 space-y-2.5">
+                <div className="glass-card">
+                  <div className="p-5 space-y-2.5">
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="text-sm font-medium text-foreground">{subj.subject_name}</p>
@@ -412,13 +410,13 @@ const ProfileSection = ({ user, isAdmin = false, onBackToDesktop, onUpdateProfil
                       </Badge>
                     </div>
                     <div className="space-y-1">
-                      <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                      <div className="progress-track">
                         <motion.div
                           initial={{ width: 0 }}
                           whileInView={{ width: `${subj.progress_percent}%` }}
                           viewport={{ once: true }}
                           transition={{ duration: 0.7, ease: "easeOut" }}
-                          className="h-full bg-primary rounded-full"
+                          className="progress-fill"
                         />
                       </div>
                       <div className="flex justify-between">
@@ -430,8 +428,8 @@ const ProfileSection = ({ user, isAdmin = false, onBackToDesktop, onUpdateProfil
                         <span className="text-xs font-medium text-primary tabular-nums">{subj.progress_percent}%</span>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -440,7 +438,7 @@ const ProfileSection = ({ user, isAdmin = false, onBackToDesktop, onUpdateProfil
 
       {/* ━━ 4. ACTIVITY HISTORY ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <Section className="space-y-4">
-        <motion.h2 variants={fadeUp} className="text-lg font-semibold text-foreground flex items-center gap-2">
+        <motion.h2 variants={fadeUp} className="section-title text-lg flex items-center gap-2">
           <Activity className="h-4 w-4 text-primary" /> Activity History
         </motion.h2>
 
@@ -462,9 +460,9 @@ const ProfileSection = ({ user, isAdmin = false, onBackToDesktop, onUpdateProfil
                   key={item.id}
                   variants={fadeUp}
                   custom={i}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border/40 hover:border-border transition-colors"
+                  className="activity-item"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500/15 to-purple-500/15 flex items-center justify-center shrink-0">
                     <Icon className="h-4 w-4 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -483,7 +481,7 @@ const ProfileSection = ({ user, isAdmin = false, onBackToDesktop, onUpdateProfil
 
       {/* ━━ 5. ACHIEVEMENTS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <Section className="space-y-4">
-        <motion.h2 variants={fadeUp} className="text-lg font-semibold text-foreground flex items-center gap-2">
+        <motion.h2 variants={fadeUp} className="section-title text-lg flex items-center gap-2">
           <Trophy className="h-4 w-4 text-primary" /> Achievements
         </motion.h2>
 
@@ -507,16 +505,16 @@ const ProfileSection = ({ user, isAdmin = false, onBackToDesktop, onUpdateProfil
                   whileHover={{ y: -2, transition: { duration: 0.15 } }}
                   className="min-w-[220px] shrink-0 snap-start"
                 >
-                  <Card className="border-border/50 bg-card/60 backdrop-blur-sm hover:shadow-md hover:border-primary/25 transition-all h-full">
-                    <CardContent className="p-5 space-y-2">
+                  <div className="achievement-card h-full">
+                    <div className="p-5 space-y-2">
                       <span className="text-3xl">{a.icon || "🏆"}</span>
                       <p className="text-sm font-medium text-foreground">{a.title}</p>
                       <p className="text-xs text-muted-foreground">{a.description}</p>
                       <p className="text-[10px] text-muted-foreground/60">
                         {new Date(a.earned_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                       </p>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
                 </motion.div>
               ))}
             </div>
