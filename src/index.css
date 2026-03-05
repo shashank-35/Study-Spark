@@ -387,6 +387,49 @@
     transition: background-color 200ms ease, color 200ms ease;
   }
 
+  /* ── Auth page — Clerk component overrides ── */
+  .auth-clerk-wrapper .cl-rootBox {
+    width: 100%;
+  }
+  .auth-clerk-wrapper .cl-card {
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+    width: 100%;
+  }
+  .auth-clerk-wrapper .cl-socialButtonsBlockButton {
+    border-radius: 12px;
+    padding: 14px;
+    border-width: 2px;
+    transition: all 0.2s ease;
+  }
+  .auth-clerk-wrapper .cl-socialButtonsBlockButton:hover {
+    box-shadow: 0 0 8px rgba(162, 148, 249, 0.3);
+  }
+  .auth-clerk-wrapper .cl-formFieldInput {
+    border-radius: 12px;
+    padding: 14px;
+    border-width: 2px;
+    transition: all 0.2s ease;
+  }
+  .auth-clerk-wrapper .cl-formFieldInput:focus {
+    border-color: #A294F9;
+    box-shadow: 0 0 8px rgba(162, 148, 249, 0.3);
+  }
+  .auth-clerk-wrapper .cl-formButtonPrimary {
+    border-radius: 12px;
+    padding: 14px;
+    background: linear-gradient(135deg, #A294F9, #CDC1FF);
+    transition: all 0.2s ease;
+  }
+  .auth-clerk-wrapper .cl-formButtonPrimary:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(162, 148, 249, 0.3);
+  }
+  .auth-clerk-wrapper .cl-footer {
+    display: none;
+  }
+
   /* ══════════════════════════════════════════════════════════════════════
      LANDING PAGE — Modern SaaS styles (Light theme, performance-first)
      ═══════════════════════════════════════════════════════════════════ */
@@ -423,6 +466,10 @@
   /* Subtle dot grid pattern for SaaS feel */
   .hero-dot-grid {
     background-image: radial-gradient(circle, #cbd5e1 0.8px, transparent 0.8px);
+    background-size: 24px 24px;
+  }
+  .dark .hero-dot-grid {
+    background-image: radial-gradient(circle, rgba(255,255,255,0.08) 0.8px, transparent 0.8px);
     background-size: 24px 24px;
   }
 
@@ -466,11 +513,11 @@
   .cta-gradient-bg {
     background: linear-gradient(
       135deg,
-      #7c3aed 0%,
-      #6366f1 30%,
-      #4f46e5 50%,
-      #7c3aed 75%,
-      #a855f7 100%
+      #A294F9 0%,
+      #8B7CF6 30%,
+      #7C3AED 50%,
+      #A294F9 75%,
+      #CDC1FF 100%
     );
     background-size: 300% 300%;
     animation: cta-gradient-shift 12s ease-in-out infinite;

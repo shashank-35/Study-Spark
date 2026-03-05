@@ -38,7 +38,7 @@ function LandingNavbar({
       transition={{ duration: 0.5, ease: "easeOut" }}
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-white/80 backdrop-blur-lg shadow-sm shadow-blue-500/5 border-b border-blue-100/60"
+          ? "bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-sm shadow-blue-500/5 dark:shadow-none border-b border-blue-100/60 dark:border-gray-800/60"
           : "bg-transparent"
       }`}
     >
@@ -48,7 +48,7 @@ function LandingNavbar({
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:shadow-lg group-hover:shadow-blue-500/30 transition-shadow">
             <GraduationCap className="h-4.5 w-4.5 text-white" />
           </div>
-          <span className="text-lg font-bold text-gray-900">StudySpark</span>
+          <span className="text-lg font-bold text-gray-900 dark:text-white">StudySpark</span>
         </a>
 
         {/* Center Nav */}
@@ -57,7 +57,7 @@ function LandingNavbar({
             <a
               key={link.label}
               href={link.href}
-              className="px-3.5 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100/60 transition-colors duration-200"
+              className="px-3.5 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100/60 dark:hover:bg-white/10 transition-colors duration-200"
             >
               {link.label}
             </a>
@@ -77,7 +77,7 @@ function LandingNavbar({
 
         {/* Mobile menu button */}
         <button
-          className="lg:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+          className="lg:hidden p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
@@ -93,7 +93,7 @@ function LandingNavbar({
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25 }}
-            className="lg:hidden overflow-hidden bg-white/95 backdrop-blur-lg border-b border-gray-100"
+            className="lg:hidden overflow-hidden bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-b border-gray-100 dark:border-gray-800"
           >
             <div className="px-4 py-3 space-y-1">
               {navLinks.map((link) => (
@@ -101,7 +101,7 @@ function LandingNavbar({
                   key={link.label}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="block px-3 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+                  className="block px-3 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
                 >
                   {link.label}
                 </a>

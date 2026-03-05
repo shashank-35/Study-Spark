@@ -44,7 +44,7 @@ function DashboardMockup() {
   return (
     <div className="relative w-full max-w-md mx-auto">
       {/* Main dashboard card */}
-      <div className="bg-white rounded-2xl shadow-xl shadow-blue-500/10 border border-gray-100 p-5 space-y-4">
+      <div className="bg-white dark:bg-gray-800/90 rounded-2xl shadow-xl shadow-blue-500/10 border border-gray-100 dark:border-gray-700 p-5 space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -52,8 +52,8 @@ function DashboardMockup() {
               <BarChart3 className="h-4 w-4 text-white" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-900">My Progress</p>
-              <p className="text-xs text-gray-500">Semester 4</p>
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">My Progress</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Semester 4</p>
             </div>
           </div>
           <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full flex items-center gap-1">
@@ -70,10 +70,10 @@ function DashboardMockup() {
           ].map((item) => (
             <div key={item.label}>
               <div className="flex justify-between text-xs mb-1">
-                <span className="text-gray-700 font-medium">{item.label}</span>
-                <span className="text-gray-500">{item.pct}%</span>
+                <span className="text-gray-700 dark:text-gray-200 font-medium">{item.label}</span>
+                <span className="text-gray-500 dark:text-gray-400">{item.pct}%</span>
               </div>
-              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full ${item.color} transition-all duration-1000`}
                   style={{ width: `${item.pct}%` }}
@@ -90,34 +90,34 @@ function DashboardMockup() {
             { icon: Brain, label: "Quizzes", value: "48" },
             { icon: CheckCircle2, label: "Completed", value: "156" },
           ].map((stat) => (
-            <div key={stat.label} className="text-center p-2.5 rounded-xl bg-gray-50">
-              <stat.icon className="h-4 w-4 text-blue-600 mx-auto mb-1" />
-              <p className="text-sm font-bold text-gray-900">{stat.value}</p>
-              <p className="text-[10px] text-gray-500">{stat.label}</p>
+            <div key={stat.label} className="text-center p-2.5 rounded-xl bg-gray-50 dark:bg-gray-700/50">
+              <stat.icon className="h-4 w-4 text-blue-600 dark:text-blue-400 mx-auto mb-1" />
+              <p className="text-sm font-bold text-gray-900 dark:text-white">{stat.value}</p>
+              <p className="text-[10px] text-gray-500 dark:text-gray-400">{stat.label}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Floating mini card — top right */}
-      <div className="absolute -top-3 -right-3 bg-white rounded-xl shadow-lg shadow-purple-500/10 border border-gray-100 px-3 py-2 flex items-center gap-2 animate-float">
-        <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
-          <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
+      <div className="absolute -top-3 -right-3 bg-white dark:bg-gray-800 rounded-xl shadow-lg shadow-purple-500/10 border border-gray-100 dark:border-gray-700 px-3 py-2 flex items-center gap-2 animate-float">
+        <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
+          <CheckCircle2 className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
         </div>
         <div>
-          <p className="text-xs font-semibold text-gray-900">Quiz Passed!</p>
-          <p className="text-[10px] text-gray-500">Score: 92%</p>
+          <p className="text-xs font-semibold text-gray-900 dark:text-white">Quiz Passed!</p>
+          <p className="text-[10px] text-gray-500 dark:text-gray-400">Score: 92%</p>
         </div>
       </div>
 
       {/* Floating mini card — bottom left */}
-      <div className="absolute -bottom-3 -left-3 bg-white rounded-xl shadow-lg shadow-blue-500/10 border border-gray-100 px-3 py-2 flex items-center gap-2 animate-float-slow">
-        <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
-          <TrendingUp className="h-3.5 w-3.5 text-blue-600" />
+      <div className="absolute -bottom-3 -left-3 bg-white dark:bg-gray-800 rounded-xl shadow-lg shadow-blue-500/10 border border-gray-100 dark:border-gray-700 px-3 py-2 flex items-center gap-2 animate-float-slow">
+        <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
+          <TrendingUp className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
-          <p className="text-xs font-semibold text-gray-900">85% Overall</p>
-          <p className="text-[10px] text-gray-500">Keep going!</p>
+          <p className="text-xs font-semibold text-gray-900 dark:text-white">85% Overall</p>
+          <p className="text-[10px] text-gray-500 dark:text-gray-400">Keep going!</p>
         </div>
       </div>
     </div>
@@ -164,7 +164,7 @@ function HeroSection({
           >
             {/* Trust badge */}
             <motion.div variants={fade(0.1)} className="mb-6">
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 backdrop-blur-sm border border-gray-200/60 shadow-sm text-sm font-medium text-gray-700">
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 dark:bg-white/10 backdrop-blur-sm border border-gray-200/60 dark:border-white/20 shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200">
                 <span className="flex items-center gap-0.5">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
@@ -177,7 +177,7 @@ function HeroSection({
             {/* Heading */}
             <motion.h1
               variants={fade(0.25)}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-[3.5rem] xl:text-6xl font-bold tracking-tight leading-[1.1] mb-6 text-gray-900"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-[3.5rem] xl:text-6xl font-bold tracking-tight leading-[1.1] mb-6 text-gray-900 dark:text-white"
             >
               Learn Smarter.
               <br />
@@ -191,7 +191,7 @@ function HeroSection({
             {/* Subtext */}
             <motion.p
               variants={fade(0.4)}
-              className="text-lg sm:text-xl text-gray-600 max-w-lg mx-auto lg:mx-0 mb-8 leading-relaxed"
+              className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-lg mx-auto lg:mx-0 mb-8 leading-relaxed"
             >
               All-in-one learning platform to manage courses, track performance,
               and stay consistent with your goals.
@@ -219,7 +219,7 @@ function HeroSection({
                 <Button
                   size="lg"
                   variant="outline"
-                  className="rounded-full bg-white/60 backdrop-blur-sm border-gray-200 text-gray-700 hover:bg-white hover:border-gray-300 text-base font-semibold px-8 py-6 shadow-sm hover:shadow-md hover:scale-105 transition-all duration-200"
+                  className="rounded-full bg-white/60 dark:bg-white/10 backdrop-blur-sm border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-white dark:hover:bg-white/20 hover:border-gray-300 dark:hover:border-gray-500 text-base font-semibold px-8 py-6 shadow-sm hover:shadow-md hover:scale-105 transition-all duration-200"
                 >
                   <Play className="mr-2 h-5 w-5 text-blue-600" />
                   Watch Demo
@@ -247,8 +247,8 @@ function HeroSection({
                   )
                 )}
               </div>
-              <p className="text-sm text-gray-500">
-                <span className="font-semibold text-gray-700">2,400+</span> students
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="font-semibold text-gray-700 dark:text-gray-200">2,400+</span> students
                 joined this week
               </p>
             </motion.div>

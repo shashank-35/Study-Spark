@@ -10,8 +10,8 @@ createRoot(document.getElementById("root")!).render(
   publishableKey ? (
     <ClerkProvider
       publishableKey={publishableKey}
-      afterSignInUrl="/"
-      afterSignUpUrl="/"
+      signInFallbackRedirectUrl="/"
+      signUpFallbackRedirectUrl="/"
     >
       <ThemeProvider attribute="class" defaultTheme="light">
         <App />
